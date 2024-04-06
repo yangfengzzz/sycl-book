@@ -17,6 +17,8 @@ Lambda 表达式是一种在使用时表示Kernel的简洁而方便的方法，�
 
 
 \subsection{为什么用三种方式来表示Kernel？}
+{\color{red} 表示 Kernel 的三种方式}
+
 在深入讨论细节之前，我们首先总结一下为什么有三种定义Kernel的方法以及每种方法的优缺点。 
 图 10-1 给出了一个有用的总结。
 
@@ -32,7 +34,11 @@ C++ lambda 表达式非常强大并且具有表达语法，
 但在 SYCL 中表达Kernel时，仅需要（并支持）完整 C++ lambda 表达式语法的特定子集。
 
 \subsubsection{Kernel Lambda 表达式的元素}
+{\color{red} 使用 lambda 表达式定义的简单Kernel}
+
 图 10-2 显示了一个用典型 lambda 表达式编写的简单Kernel——本书到目前为止的代码示例都使用了这种语法。
+
+{\color{red} Kernel lambda 表达式的更多元素，包括可选元素}
 
 图 10-3 中的插图显示了可与Kernel一起使用的 lambda 表达式的元素，但其中许多元素并不典型。 
 在大多数情况下，lambda 默认值就足够了，因此典型的Kernel lambda 表达式看起来更像图 10-2 中的 lambda 表达式，
@@ -70,18 +76,35 @@ C++ lambda 表达式非常强大并且具有表达语法，
 	\item 可以指定返回类型，但如果提供则必须为 void，因为Kernel不支持非 void 返回类型。
 \end{enumerate}
 
+\begin{remark}[LAMBDA 捕获：隐式还是显式？]
+由于可能存在的悬空指针问题，某些 C++ 样式指南建议不要对 lambda 表达式进行隐式（或默认）捕获，
+尤其是当 lambda 表达式跨越范围边界时。
+当使用 lambda 表示Kernel时，可能会出现同样的问题，因为Kernel lambda 在设备上异步执行，与主机代码分开。
+
+由于隐式捕获有用且简洁，因此它是 SYCL Kernel的常见做法，
+也是我们在本书中使用的约定，但最终由我们决定是选择隐式捕获的简洁性还是显式捕获的清晰性。
+\end{remark}
+
 \subsubsection{识别Kernel Lambda 表达式}
+{\color{red} 识别Kernel lambda 表达式}
+
 当将Kernel编写为 lambda 表达式时，在某些情况下还必须提供一个元素：因为 lambda 表达式是匿名的，
 所以有时 SYCL 需要显式Kernel名称模板参数来唯一标识编写为 lambda 表达式的Kernel。
 
 命名Kernel lambda 表达式是主机代码编译器在由单独的设备代码编译器编译Kernel时识别要调用哪个Kernel的一种方式。 
 命名Kernel lambda 还可以对已编译Kernel进行运行时自省或按名称构建Kernel，如图 10-9 所示。
 
+{\color{red} 使用未命名的Kernel lambda 表达式}
+
 为了在不需要Kernel名称模板参数时支持更简洁的代码，对于大多数 SYCL 2020 编译器来说，Kernel名称模板参数是可选的。 
 当不需要Kernel名称模板参数时，我们的代码可以更加紧凑，如图10-5所示。
 
 由于大多数情况下不需要 lambda 表达式的Kernel名称模板参数，
 因此我们通常可以从未命名的 lambda 开始，仅在需要Kernel名称模板参数的特定情况下添加Kernel名称。
+
+\begin{remark}
+	当不需要Kernel名称模板参数时，最好使用未命名的Kernel lambda 来减少冗长。
+\end{remark}
 
 \subsection{Kernel作为命名函数对象}
 命名函数对象，也称为函子，是 C++ 中的一种既定模式，允许在维护定义良好的接口的同时对任意数据集合进行操作。 
@@ -98,6 +121,8 @@ C++ lambda 表达式非常强大并且具有表达语法，
 C++20 添加了模板化 lambda 表达式，但基于 C++17 的 SYCL 2020 中的Kernel不支持模板化 lambda 表达式。
 
 \subsubsection{Kernel命名函数对象的元素}
+{\color{red} Kernel作为命名函数对象}
+
 图 10-6 中的代码演示了表示为命名函数对象的Kernel的典型用法。 
 在这个例子中，Kernel的参数被传递给类构造函数，而Kernel本身则在重载函数调用operator()中。
 
@@ -107,6 +132,8 @@ C++20 添加了模板化 lambda 表达式，但基于 C++17 的 SYCL 2020 中的
 任何可普通复制的 C++ 类型都是隐式设备可复制的。
 
 重载函数调用operator()的参数取决于Kernel的启动方式，就像用lambda表达式表示的Kernel一样。
+
+{\color{red} 将可选属性与命名函数对象一起使用}
 
 图 10-7 中的代码显示了如何在定义为命名函数对象的Kernel上使用可选的Kernel属性，例如 reqd\_work\_group\_size 属性。 
 当Kernel被定义为命名函数对象时，可选Kernel属性有两个有效位置。 
@@ -147,6 +174,8 @@ SYCL Kernel包及其包含的Kernel或函数可以处于以下三种状态之一
 对于复杂的Kernel，编译Kernel的时间可能很长，因此需要在应用程序执行期间将编译转移到不同的点，
 例如在加载应用程序时，或者转移到单独的后台线程。
 
+{\color{red} 使用Kernel捆绑包显式编译Kernel}
+
 为了更好地控制Kernel编译的时间和方式，我们可以在将Kernel提交到队列之前显式请求编译Kernel包。 
 当Kernel被提交到队列执行时，可以使用预编译的Kernel包。 
 图 10-8 显示了如何在将任何Kernel提交到队列之前编译应用程序使用的所有Kernel，以及如何使用预编译的Kernel包。
@@ -157,6 +186,8 @@ SYCL Kernel包及其包含的Kernel或函数可以处于以下三种状态之一
 当然，如果所有Kernel都被提前编译，或者如果所有Kernel都已经被即时编译，
 则该操作实际上是免费的，因为所有Kernel都已经处于可执行状态。
 
+{\color{red} 使用Kernel捆绑包显式和有选择地编译Kernel}
+
 如果我们想要更多地控制Kernel的编译时间和方式，我们可以请求特定设备的Kernel包，甚至是程序中的特定Kernel。 
 这使我们能够有选择地立即编译程序中的某些Kernel，同时让其他Kernel稍后或根据需要进行编译。 
 图 10-9 显示了如何仅编译由类 Add kernel name 标识的Kernel，
@@ -164,9 +195,15 @@ SYCL Kernel包及其包含的Kernel或函数可以处于以下三种状态之一
 
 这是一种罕见的情况，我们需要命名我们的Kernel lambda 表达式； 否则，我们将无法识别要编译的Kernel。
 
+\begin{remark}
+	使用Kernel捆绑包在应用程序中以可预测的方式编译Kernel！
+\end{remark}
+
 Kernel包中的Kernel还可用于查询有关已编译Kernel的信息，例如确定特定设备的Kernel的最大工作组大小。 
 在某些情况下，可能需要这些类型的Kernel查询来选择用于Kernel和特定设备的有效值。 
 在其他情况下，Kernel查询可以提供提示，允许我们的应用程序动态调整并选择Kernel和特定设备的最佳值。
+
+{\color{red} 查询Kernel捆绑包中的Kernel}
 
 识别Kernel、从编译的Kernel包中获取Kernel对象以及使用Kernel对象执行设备特定查询的基本机制如图 10-10 所示。 
 第 12 章描述了更完整的可用Kernel查询列表。
