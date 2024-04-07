@@ -6,7 +6,11 @@
 这可以在必要时直接访问特定于 API 的功能，同时保留 SYCL 的可移植性和易用性优势。
 
 \subsection{什么是后端互操作性？}
-{\color{red} SYCL 后端、平台和设备之间的关系}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.1.png}
+	\caption{\textit{SYCL 后端、平台和设备之间的关系 }}
+\end{figure}
 
 到目前为止，在本书中，我们提到了在 SYCL 设备上运行的 SYCL 程序，
 但实际上，许多 SYCL 实现都基于较低级别的 API（例如 OpenCL、零级、CUDA 或其他 API）来访问系统中的并行硬件。 
@@ -14,7 +18,11 @@
 图20-1显示了SYCL后端、平台和设备之间的关系。 
 大多数 SYCL 实现可以同时在多个 SYCL 后端上运行 SYCL 程序，以利用系统中的所有并行硬件。
 
-{\color{red} 查询 SYCL 平台的 SYCL 后端}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.2.png}
+	\caption{\textit{查询 SYCL 平台的 SYCL 后端 }}
+\end{figure}
 
 我们可以通过先查询SYCL平台，然后查询与每个平台关联的SYCL后端来查询系统中的SYCL后端，如图20-2所示。 
 该程序的输出将取决于系统中 SYCL 设备的数量和类型。 
@@ -51,12 +59,20 @@
 从 OpenCL 对象创建 SYCL 对象后，它们可以被 SYCL 队列和 SYCL Kernel使用，
 就像任何其他 SYCL 对象一样，如图 20-3 所示。
 
-{\color{red} 从 OpenCL 对象创建 SYCL 对象}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.3.png}
+	\caption{\textit{从 OpenCL 对象创建 SYCL 对象 }}
+\end{figure}
 
 SYCL 2020 规范仅定义了与 OpenCL 后端的互操作性，但 SYCL 实现可以通过扩展提供与其他后端的互操作性。 
 图 20-4 显示了如何使用 sycl\_ext\_oneapi\_backend\_level\_zero 扩展从零级对象创建 SYCL 对象。
 
-{\color{red} 从 Level Zero 对象创建 SYCL 对象}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.4.png}
+	\caption{\textit{从 Level Zero 对象创建 SYCL 对象 }}
+\end{figure}
 
 请注意，对于零级后端，创建 SYCL 对象时传递的参数略有不同。 
 对于任何受支持的后端互操作性来说，这通常都是正确的，因为每个后端可能需要不同的信息来正确创建 SYCL 对象。 
@@ -76,14 +92,22 @@ SYCL 2020 规范仅定义了与 OpenCL 后端的互操作性，但 SYCL 实现�
 
 \paragraph{使用自由函数获取后端对象}
 
-{\color{red} 使用 get\_native 自由函数从 SYCL 对象中提取 OpenCL 对象}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.5.png}
+	\caption{\textit{使用 get\_native 自由函数从 SYCL 对象中提取 OpenCL 对象 }}
+\end{figure}
 
 例如，假设我们有一个优化的 OpenCL 库，我们希望将其与 SYCL 应用程序一起使用。 
 我们可以调用后端互操作性 get\_native 函数从 SYCL 对象中获取本机 OpenCL 对象，然后可以将其与 OpenCL 库一起使用。 
 为简单起见，图 20-5 中的代码仅执行查询并使用本机 OpenCL 对象分配一些内存，
 但它们也可以用于执行更复杂的操作，例如创建命令队列、编译程序和执行Kernel。
 
-{\color{red} 使用 get\_native 自由函数从 SYCL 对象中提取 Level Zero 对象}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.6.png}
+	\caption{\textit{使用 get\_native 自由函数从 SYCL 对象中提取 Level Zero 对象 }}
+\end{figure}
 
 作为 sycl\_ext\_oneapi\_backend\_level\_zero 扩展的一部分，
 还为零级后端添加了相同的 get\_native 函数，如图 20-6 所示。
@@ -96,7 +120,11 @@ SYCL 2020 规范仅定义了与 OpenCL 后端的互操作性，但 SYCL 实现�
 interop\_handle 表示调用主机任务时 SYCL 运行时的状态，
 并提供对表示 SYCL 队列、设备、上下文以及为主机任务捕获的任何缓冲区的本机后端对象的访问。
 
-{\color{red} 使用interop\_handle从 SYCL 对象中提取 OpenCL 对象}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.7.png}
+	\caption{\textit{使用interop\_handle从 SYCL 对象中提取 OpenCL 对象 }}
+\end{figure}
 
 图 20-7 显示了如何使用 interop\_handle 从 SYCL 运行时调度的 host\_task 获取本机 OpenCL 对象。 
 为简单起见，此示例也仅使用本机 OpenCL 对象执行一些查询，
@@ -108,7 +136,11 @@ interop\_handle 的 get\_native\_mem 成员函数返回 cl\_mem 内存对象的�
 这是 SYCL 2020 规范中的要求，其中 interop\_handle 的成员函数的返回类型必须与 get\_native 自由函数匹配，
 但对于 interop\_handle 用法，我们可以简单地使用向量的第一个元素。
 
-{\color{red} 使用interop\_handle从 SYCL 对象中提取 OpenCL 对象}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.8.png}
+	\caption{\textit{使用interop\_handle从 SYCL 对象中提取 OpenCL 对象 }}
+\end{figure}
 
 与 get\_native 免费函数一样，也可以通过扩展为其他 SYCL 后端提供类似的功能。 
 图 20-8 显示了如何使用 sycl\_ext\_oneapi\_backend\_level\_zero 扩展对零级后端执行类似的操作。
@@ -126,7 +158,11 @@ interop\_handle 的 get\_native\_mem 成员函数返回 cl\_mem 内存对象的�
 图 20-9 中的代码显示了如何从 SYCL 上下文获取 OpenCL 上下文，
 如何使用此 OpenCL 上下文创建 OpenCL Kernel，以及如何从 OpenCL Kernel对象创建和使用 SYCL Kernel。
 
-{\color{red} 从 OpenCL Kernel对象创建的Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.9.png}
+	\caption{\textit{从 OpenCL Kernel对象创建的Kernel }}
+\end{figure}
 
 由于 SYCL 编译器无法直接查看使用低级 API 创建的 SYCL Kernel，
 因此必须使用 set\_arg() 或 set\_args() 接口显式传递任何Kernel参数。 
@@ -147,7 +183,11 @@ SYCL 的早期版本包含诸如 build\_with\_source 之类的函数，
 当后端直接支持 API 定义的源语言时，例如使用的 OpenCL C Kernel 对于图20-9中的OpenCL后端，
 这种删除不是问题，但是如果后端不直接支持特定的源语言，我们该怎么办？
 
-{\color{red} 使用 SPIR-V 和在线编译器创建的Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.10.png}
+	\caption{\textit{使用 SPIR-V 和在线编译器创建的Kernel }}
+\end{figure}
 
 一些SYCL实现可以提供显式在线编译器来从后端不能直接使用的源语言编译为后端支持的不同格式。 
 图 20-10 显示了如何使用实验性 sycl\_ext\_intel\_online\_compiler 扩展
@@ -177,7 +217,11 @@ sycl\_ext\_intel\_online\_compiler扩展是一个实验性扩展，因此可能�
 如果我们的应用程序已经在使用自定义设备选择逻辑，那么这应该是一个简单的添加。 
 该机制也是可移植的，因为它仅使用标准 SYCL 查询。
 
-{\color{red} 查找具有特定后端的 SYCL 设备}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F20.11.png}
+	\caption{\textit{查找具有特定后端的 SYCL 设备 }}
+\end{figure}
 
 对于尚未使用自定义设备选择逻辑的应用程序，我们可以编写一个简短的 C++ lambda 表达式来迭代所有设备，
 以查找具有所请求后端的设备，如图 20-11 所示。 

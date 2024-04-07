@@ -54,7 +54,11 @@ C++23 中最令人兴奋的功能之一是 mdspan，它是一种非拥有数据�
 这些语义与 SYCL 访问器的语义非常相似，
 并且 mdspan 将使类似访问器的语法能够用于缓冲区和 USM 分配，如图 EP-1 所示。
 
-{\color{red} 使用 mdspan 将类似访问器的索引附加到 USM 指针}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F22.1.png}
+	\caption{\textit{使用 mdspan 将类似访问器的索引附加到 USM 指针 }}
+\end{figure}
 
 希望 SYCL 正式支持 mdspan 只是时间问题。 
 同时，我们建议感兴趣的读者尝试作为 Kokkos 项目一部分提供的开源生产质量参考实现。
@@ -72,7 +76,11 @@ C++ 的另一个令人兴奋的提议功能是 std::simd 类模板，它旨在�
 对invoke\_simd 的调用充当两种编程风格所隐含的两种执行模型之间的清晰边界，并定义数据应如何在它们之间流动。 
 图 EP-2 中的代码显示了 invoke\_simd 用法的一个非常简单的示例，调用一个期望接收标量和向量 (simd) 参数组合的函数。
 
-{\color{red} 从 SPMD Kernel调用 SIMD 函数的简单示例}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F22.2.png}
+	\caption{\textit{从 SPMD Kernel调用 SIMD 函数的简单示例 }}
+\end{figure}
 
 invoke\_simd 采用的方法有几个优点。 首先，不会出现令人讨厌的意外——显式调用具有不同执行模型的函数，
 并且用户负责描述如何来回编组数据。 
@@ -103,7 +111,11 @@ SYCL 2020 通过一组用于推导地址空间的推理规则来允许此类硬�
 用于公开这种“设备常量表达式”概念的确切机制仍在设计中。 
 我们希望它建立在 SYCL 2020 中引入的专门化常量功能的基础上，并且外观和行为与图 EP-3 中所示的代码类似。
 
-{\color{red} 在Kernel编译时根据设备方面专门处理Kernel代码}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F22.3.png}
+	\caption{\textit{在Kernel编译时根据设备方面专门处理Kernel代码 }}
+\end{figure}
 
 \subsection{编译时属性}
 SYCL 允许通过将属性列表传递到构造函数来修改某些类（例如缓冲区、访问器）的行为。 

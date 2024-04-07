@@ -22,11 +22,19 @@ CUDA 旨在支持来自单一设备供应商的 GPU 设备，因此大多数 CUD
 则可以使用各种快捷方式来减少代码冗长，例如标准设备选择器。 
 图 21-1 显示了一个基本 SYCL 示例，该示例使用由 SYCL 实现选择的默认设备队列。
 
-{\color{red} 在默认 SYCL 设备上运行内核}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.1.png}
+	\caption{\textit{在默认 SYCL 设备上运行Kernel }}
+\end{figure}
 
 此 SYCL 代码与等效的 CUDA 代码非常相似，如图 21-2 所示。
 
-{\color{red} 在默认 CUDA 设备上运行内核}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.2.png}
+	\caption{\textit{在默认 CUDA 设备上运行Kernel }}
+\end{figure}
 
 现实世界的 SYCL 代码通常更复杂。 
 例如，许多 SYCL 应用程序将通过搜索特定设备特征（请参阅第 12 章）来枚举
@@ -53,7 +61,11 @@ CUDA 做出了不同的决定。 相反，CUDA 通过添加新关键字和特殊
 不过，我们首先需要了解一点背景知识：因为 CUDA 和 SYCL 经常对相似的概念使用不同的术语，
 所以我们需要一个解码器，以便我们可以有意义地比较这两个 API，如图 21-3 中的摘要所示。
 
-{\color{red} CUDA 和 SYCL 解码器环}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.3.png}
+	\caption{\textit{CUDA 和 SYCL 解码器环 }}
+\end{figure}
 
 与本书其余部分一致使用 SYCL 术语不同，本章可以互换使用 CUDA 术语和 SYCL 术语。
 
@@ -96,13 +108,21 @@ SYCL 将其约定与标准 C++ 中的多维数组对齐，因此最后一个维�
 由于这种差异，与等效的 CUDA 代码相比，多维 SYCL 范围将出现转置，
 并且 SYCL id 的最高维度将对应于可比较 CUDA 内置变量的 x 分量，而不是最低维度。
 
-{\color{red} x-component 是 CUDA 中的连续维度}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.4.png}
+	\caption{\textit{x-component 是 CUDA 中的连续维度 }}
+\end{figure}
 
 为了演示这种差异，请考虑图 21-4 中的 CUDA 示例。 
 在此示例中，每个 CUDA 线程与其邻居交换其 threadIdx.x 值。 
 由于 x 组件是 CUDA 中移动最快的组件，因此我们不期望 CUDA 线程的值与其相邻线程的值匹配。
 
-{\color{red} 最后一个维度是 SYCL 中的连续维度}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.5.png}
+	\caption{\textit{最后一个维度是 SYCL 中的连续维度 }}
+\end{figure}
 
 等效的 SYCL 示例如图 21-5 所示。 请注意，在 SYCL 示例中，ND 范围是 \{2, 16\}，
 而不是 CUDA 示例中的 (16, 2)，因此并行索引空间似乎已转置。 
@@ -126,7 +146,11 @@ SYCL 示例使用函数 permute\_group\_by\_xor(sg,fastest,1) 与其邻居交换
 由于Work-Items集是由组对象而不是位域掩码指定的，因此它可以表示任意大小的集。 
 这种灵活性是可取的，因为对于某些 SYCL 设备，Sub-Groups大小可能小于或大于 32。
 
-{\color{red} 与CUDA合作小组交换数据}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.6.png}
+	\caption{\textit{与CUDA合作小组交换数据 }}
+\end{figure}
 
 在这种特定情况下，可以重写 CUDA 示例以使用更现代的 CUDA 协作组语法，
 而不是旧的 \_\_shfl\_xor\_sync 语法。 等效的 CUDA 协作组如图 21-6 所示。 
@@ -165,7 +189,11 @@ CUDA 的 \_\_syncthreads 函数同步线程块中的所有未退出的 CUDA 线�
 这意味着，如果某些 CUDA 线程在调用 \_\_syncthreads 之前提前退出，
 则 CUDA Kernel将正确运行，但不能保证如图 21-7 所示的 SYCL Kernel将正确运行。
 
-{\color{red} 可能的 SYCL 屏障死锁}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.7.png}
+	\caption{\textit{可能的 SYCL 屏障死锁 }}
+\end{figure}
 
 在这种情况下，解决方法很简单：可以将范围检查移到 group\_barrier 之后，
 或者在这种特定情况下，可以完全删除 group\_barrier。 
@@ -186,7 +214,11 @@ SYCL group\_barrier 接受一个可选参数来指定Barrier的 fence\_scope，�
 可以将更广泛的范围传递给 group\_barrier，例如 memory\_scope::device，
 但这通常不是必需的，并且可能会导致 SYCL group\_barrier 比 CUDA \_\_syncthreads Barrier更昂贵。
 
-{\color{red} CUDA 和 SYCL 的等效Barrier}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.8.png}
+	\caption{\textit{CUDA 和 SYCL 的等效Barrier }}
+\end{figure}
 
 图 21-8 中的代码显示了 CUDA 和 SYCL 的等效Barrier语法。 
 请注意，使用 this\_thread\_block 和 tiled\_partition 的较新 CUDA 协作组语法
@@ -208,7 +240,11 @@ SYCL 原子语法有点不同，它基于 C++20 中的 std::atomic\_ref （
 我们需要声明 SYCLatomic\_ref 具有类似的 memory\_order::relaxed 内存顺序
 和 memory\_scope::device 范围，如图 21-9 所示。
 
-{\color{red} CUDA 和 SYCL 等效原子操作}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.9.png}
+	\caption{\textit{CUDA 和 SYCL 等效原子操作 }}
+\end{figure}
 
 较新的 CUDA 代码可能使用 CUDA C++ 标准库中的 cuda::atomic\_ref 类。 
 cuda::atomic\_ref 类看起来更像 SYCLatomic\_ref 类，但也有一些重要的区别需要注意：
@@ -346,7 +382,11 @@ CUDA 和 SYCL 都在积极发展对矩阵乘法硬件的支持。
 这在实践中不是一个非常有用的示例，但它有我们的自动迁移工具需要处理的有趣情况，
 例如 CUDA 共享内存全局变量、Barrier、设备查询、内存分配和初始化、Kernel调度本身， 以及一些基本的错误检查。
 
-{\color{red} 我们将自动迁移一个简单的CUDA程序}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.10.png}
+	\caption{\textit{我们将自动迁移一个简单的CUDA程序 }}
+\end{figure}
 
 \subsubsection{运行 dpct}
 
@@ -354,7 +394,11 @@ CUDA 和 SYCL 都在积极发展对矩阵乘法硬件的支持。
 对于更复杂的场景，可以在应用程序构建过程中调用 dpct 来识别要迁移的 CUDA 源文件。 
 请参阅本章末尾的链接以获取更多信息和其他培训材料。
 
-{\color{red} 迁移此 CUDA 程序时的示例 dpct 输出}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.11.png}
+	\caption{\textit{迁移此 CUDA 程序时的示例 dpct 输出 }}
+\end{figure}
 
 当我们在示例 CUDA 源文件上运行 dpct 时，我们可能会看到如图 21-11 所示的输出。 
 我们可以从这个输出中得出一些结论。 首先，我们的文件已成功处理，这太棒了！ 不过，有一些警告表明 dpct 无法迁移。 
@@ -366,7 +410,11 @@ CUDA 和 SYCL 都在积极发展对矩阵乘法硬件的支持。
 
 不过，对于此示例，我们可以按原样使用迁移的代码。
 
-{\color{red} 编译和运行迁移的 CUDA 程序}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.12.png}
+	\caption{\textit{编译和运行迁移的 CUDA 程序 }}
+\end{figure}
 
 图 21-12 显示了如何使用支持 NVIDIA GPU 的 DPC++ 编译器来编译迁移的代码，
 然后显示我们的迁移程序在 Intel GPU、Intel CPU 和 NVIDIA GPU 上的成功执行。 
@@ -375,7 +423,11 @@ CUDA 和 SYCL 都在积极发展对矩阵乘法硬件的支持。
 
 \subsubsection{检查 dpct 输出}
 
-{\color{red} 从 CUDA 迁移的 SYCL 内核}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.13.png}
+	\caption{\textit{从 CUDA 迁移的 SYCL Kernel }}
+\end{figure}
 
 如果我们检查迁移的输出，我们可以看到 dpct 处理了本章中描述的许多差异。 
 例如，在图21-13所示的生成的SYCL Kernel中，
@@ -384,7 +436,11 @@ CUDA 和 SYCL 都在积极发展对矩阵乘法硬件的支持。
 并且连续维度的不同约定得到了正确处理，
 例如，通过将 threadIdx.x 的使用替换为 调用 item\_gt1.get\_local\_id(2)。
 
-{\color{red} 从CUDA迁移的SYCL设备名称查询}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F21.14.png}
+	\caption{\textit{从CUDA迁移的SYCL设备名称查询 }}
+\end{figure}
 
 我们还可以看到 dpct 通过使用几个 dpct 实用函数来处理一些主机代码差异，例如图 21-14 中所示的迁移设备查询。 
 这些辅助函数仅供迁移后的代码使用。 为了可移植性和可维护性，我们应该更喜欢直接使用标准 SYCL API 进行额外的开发。
