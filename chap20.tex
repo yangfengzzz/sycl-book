@@ -74,7 +74,7 @@ SYCL 2020 规范仅定义了与 OpenCL 后端的互操作性，但 SYCL 实现�
 有两种方法可以执行此操作：第一种方法使用 get\_native 自由函数从 SYCL 对象获取本机后端对象。 
 第二个使用 host\_task 和 interop\_handle 从 SYCL 运行时调度的代码中的 SYCL 对象获取本机后端对象。
 
-\textbf{使用自由函数获取后端对象}
+\paragraph{使用自由函数获取后端对象}
 
 {\color{red} 使用 get\_native 自由函数从 SYCL 对象中提取 OpenCL 对象}
 
@@ -88,7 +88,7 @@ SYCL 2020 规范仅定义了与 OpenCL 后端的互操作性，但 SYCL 实现�
 作为 sycl\_ext\_oneapi\_backend\_level\_zero 扩展的一部分，
 还为零级后端添加了相同的 get\_native 函数，如图 20-6 所示。
 
-\textbf{通过互操作句柄获取后端对象}
+\paragraph{通过互操作句柄获取后端对象}
 
 使用 get\_native 自由函数是获取直接使用后端 API 的大段代码的后端特定对象的有效方法。 
 但在许多情况下，我们只想使用后端 API 在 SYCL 任务图中执行特定操作。 
@@ -134,7 +134,7 @@ interop\_handle 的 get\_native\_mem 成员函数返回 cl\_mem 内存对象的�
 该约定应被描述为后端互操作性规范的一部分。 在此示例中，访问器 data\_acc 作为全局指针Kernel参数数据传递。
 
 \begin{remark}
-	SyCl 2020 标准将 set\_arg（） 和 set\_args（） 接口的精确语义留给每个 SyCl 后端规范定义。
+	SYCL 2020 标准将 set\_arg（） 和 set\_args（） 接口的精确语义留给每个 SYCL 后端规范定义。
 	这允许灵活性，但这是我们编写的使用后端互操作性的代码可能特定于我们目标的后端的另一种方式。
 \end{remark}
 
@@ -214,7 +214,7 @@ sycl\_ext\_intel\_online\_compiler扩展是一个实验性扩展，因此可能�
 例如，支持 CUDA 和 HIP 后端的多个 SYCL 实现已经对与这些后端的互操作性提供了一些支持。 
 检查 SYCL 实现的文档，以确定支持哪些 SYCL 后端以及它们是否支持后端互操作性！
 
-\subsection{概括}
+\subsection{总结}
 在本章中，我们了解了每个 SYCL 对象如何与底层 SYCL 后端关联以及如何查询系统中的 SYCL 后端。 
 我们描述了后端互操作性如何为我们的 SYCL 应用程序提供直接与底层后端 API 交互的机制。 
 我们讨论了这如何使我们能够将 SYCL 增量添加到直接使用后端 API 的应用程序，
