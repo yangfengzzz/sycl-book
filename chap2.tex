@@ -12,9 +12,18 @@
 
 
 \subsection{单源}
-{\color{red} Single-source code contains both host code (runs on CPU) and device code (runs on SYCL devices) }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.1.png}
+	\caption{\textit{单源代码包含主机代码（在 CPU 上运行）和设备代码（在 SYCL 设备上运行）}}
+\end{figure}
 
-{\color{red} Simple SYCL program }
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.2.png}
+	\caption{\textit{简单的SYCL程序}}
+\end{figure}
 
 带有 SYCL 程序的 C++ 是单源的，这意味着相同的翻译单元（通常是源文件及其标头）
 既包含定义要在 SYCL 设备上执行的计算Kernel的代码，也包含协调这些Kernel执行的主机代码 。 
@@ -87,22 +96,39 @@ CPU 调试器通常也具有非常丰富的功能。
 在讨论设备的选择之前，即使是实现为我们选择的设备，我们应该首先介绍程序与设备交互的机制：队列。
 
 \subsubsection{队列}
-{\color{red} Simplified definition of some constructors of the queue class }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.3.png}
+	\caption{\textit{队列类的某些构造函数的简化定义}}
+\end{figure}
 
-{\color{red} Simplified definition of some key member functions in the queue class }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.4.png}
+	\caption{\textit{简化了队列类中一些关键成员函数的定义}}
+\end{figure}
+
 
 队列是一个抽象概念，动作被提交到该抽象概念以便在单个设备上执行。 图 2-3 和 2-4 给出了队列类的简化定义。 
 动作通常是数据并行计算的启动，尽管也可以使用其他命令，例如当我们需要比 SYCL 运行时提供的自动移动更多的控制时，
 手动控制数据移动。 提交到队列的工作可以在满足运行时跟踪的先决条件（例如输入数据的可用性）后执行。 
 第 3 章和第 8 章介绍了这些先决条件。
 
-{\color{red} A queue is bound to a single device. Work submitted to the queue executes on that device }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.5.png}
+	\caption{\textit{队列绑定到单个设备。提交到队列的工作在该设备上执行}}
+\end{figure}
 
 队列绑定到单个设备，并且该绑定发生在队列的构造上。 重要的是要了解提交到队列的工作是在该队列绑定到的单个设备上执行的。 
 队列无法映射到设备集合，因为这会导致哪个设备应执行工作不明确。 同样，队列无法将提交给它的工作分散到多个设备上。 
 相反，队列与执行提交到该队列的工作的设备之间存在明确的映射，如图 2-5 所示。
 
-{\color{red} Multiple queues can be bound to a single device } 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.6.png}
+	\caption{\textit{多个队列可以绑定到单个设备}}
+\end{figure}
 
 可以按照我们希望的应用程序架构或编程风格的任何方式在程序中创建多个队列。 
 例如，可以创建多个队列以分别与不同的设备绑定或由主机程序中的不同线程使用。 
@@ -114,7 +140,12 @@ CPU 调试器通常也具有非常丰富的功能。
 构造队列时设备的选择是通过设备选择器抽象来实现的。
 
 \subsubsection{当任何设备都可以时将队列绑定到设备}
-{\color{red} Implicit default device selector through default construction of a queue }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.7.png}
+	\caption{\textit{通过队列的默认构造隐式默认设备选择器}}
+\end{figure}
+
 图 2-7 是未指定队列应绑定到的设备的示例。 不带任何参数的默认队列构造函数（如图 2-7 所示）只是在幕后选择一些可用的设备。 
 SYCL 保证至少有一个设备始终可用，因此这种默认选择机制将始终选择某个设备。 
 在许多情况下，所选设备可能恰好是也正在执行主机程序的CPU，尽管不能保证这一点。
@@ -146,13 +177,21 @@ CPU 可能不会通过实现公开为 SYCL 设备）。 使用 CPU 设备进行�
 例如，当移动到新设备时，子组大小可能会发生变化。 
 大多数开发和调试通常可以在 CPU 设备上进行，有时随后在目标设备架构上进行最终调整和调试。
 
-{\color{red} A CPU device can execute device code like any accelerator }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.8.png}
+	\caption{\textit{CPU 设备可以像任何加速器一样执行设备代码}}
+\end{figure}
 
 CPU 设备在功能上类似于硬件加速器，队列可以与其绑定并且可以执行设备代码。 
 图 2-8 显示了 CPU 设备如何与系统中可用的其他加速器对等。 
 它可以执行设备代码，就像 GPU 或 FPGA 能够执行的方式一样，并且可以构建一个或多个与其绑定的队列。
 
-{\color{red} Selecting the host device using the cpu\_selector\_v }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.9.png}
+	\caption{\textit{使用 cpu\_selector\_v 选择主机设备}}
+\end{figure}
 
 应用程序可以通过将 cpu\_selector\_v 显式传递给队列构造函数来选择创建绑定到 CPU 设备的队列，如图 2-9 所示。
 
@@ -187,24 +226,44 @@ queue(const DeviceSelector \&deviceSelector, const property\_list \&propList = \
 
 有四个内置选择器适用于各种常见的设备。
 
-{\color{blue} TABLE }
+\begin{figure*}
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2-a1.png}
+\end{figure*}
 
 DPC++ 中包含的一个附加选择器（SYCL 中不可用）
 可通过包含标头“sycl/ext/intel/fpga\_extensions.hpp”来使用。
 
-{\color{blue} TABLE }
+\begin{figure*}
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2-a2.png}
+\end{figure*}
 
 可以使用内置选择器之一构造队列，例如
 
 queue myQueue\{ gpu\_selector\_v\{\} \}; 
 
-{\color{red} GPU device selector example }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.10.png}
+	\caption{\textit{GPU 设备选择器示例}}
+\end{figure}
 
-{\color{red} Queue bound to a GPU device available to the application }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.11.png}
+	\caption{\textit{绑定到应用程序可用的 GPU 设备的队列}}
+\end{figure}
 
-{\color{red} Example device identification output from various classes of device selectors and demonstration that device selectors can be used for construction of more than just a queue (in this case, construction of a device class instance) }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.12.png}
+	\caption{\textit{来自各种类别的设备选择器的示例设备标识输出，
+	并演示设备选择器不仅可用于构建队列（在本例中为构造设备类实例）}}
+\end{figure}
 
 图 2-10 显示了使用 GPU 选择器的完整示例，
+
 图 2-11 显示了队列与可用 GPU 设备的相应绑定。
 
 图 2-12 显示了使用各种内置选择器的示例，并演示了设备选择器与另一个在构造时接受设备选择器的类（设备）的使用。
@@ -217,9 +276,17 @@ queue myQueue\{ gpu\_selector\_v\{\} \};
 第 5 章更详细地讨论了异常和错误处理。
 
 \subsection{方法\#4：使用多个设备}
-{\color{red} Creating queues to both GPU and FPGA devices }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.13.png}
+	\caption{\textit{为 GPU 和 FPGA 设备创建队列}}
+\end{figure}
 
-{\color{red} GPU + FPGA device selector example: One queue is bound to a GPU and another to an FPGA}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.14.png}
+	\caption{\textit{GPU + FPGA 设备选择器示例：一个队列绑定到 GPU，另一个队列绑定到 FPGA}}
+\end{figure}
 
 如图2-5和2-6所示，我们可以在一个应用程序中构造多个队列。 
 我们可以将这些队列绑定到单个设备（队列的工作总和集中到单个设备）、多个设备或这些设备的某种组合。 
@@ -236,7 +303,11 @@ SYCL 定义了称为方面(Aspect)的设备属性。
 例如，设备可能展示的某些方面（在方面查询上返回 true）是 gpu、host\_debuggable、fp64 和 online\_compiler。 
 请参阅 SYCL 规范的“设备方面”部分，了解标准方面及其定义的完整列表。
 
-{\color{red} Aspect selector }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.15.png}
+	\caption{\textit{Aspect selector}}
+\end{figure}
 
 要使用 SYCL 中定义的方面来选择设备，可以使用aspect\_selector，如图 2-15 所示。 
 以aspect\_selector 的形式，采用逗号分隔的aspect 组，所有aspect 都必须由要选择的设备显示。 
@@ -268,7 +339,11 @@ SYCL 运行时在可以找到的所有可用根设备上调用选择器，并选
 	\item 根据设备或平台查询，计算我们可以想象得到的任何整数值。
 \end{enumerate}
 
-{\color{red} Custom selector for a specific Intel Arria FPGA accelerator board }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.16.png}
+	\caption{\textit{特定英特尔 Arria FPGA 加速板的自定义选择器}}
+\end{figure}
 
 例如，选择特定 Intel Arria FPGA 加速器板的一种可能方法如图 2-16 所示。
 
@@ -281,7 +356,12 @@ SYCL 运行时在可以找到的所有可用根设备上调用选择器，并选
 本章的其余部分介绍了一些工作调度结构，目的是帮助我们理解和识别设备代码和在主机处理器上本机执行的主机代码之间的划分。
 
 \subsubsection{任务图简介}
-{\color{red} The task graph defines actions to perform (asynchronously from the host program) on one or more devices and also dependences that determine when an action is safe to execute}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.17.png}
+	\caption{\textit{任务图定义要在一个或多个设备上执行的操作（从主机程序异步执行），
+	以及确定操作何时可以安全执行的依赖关系}}
+\end{figure}
 
 SYCL 执行模型中的一个基本概念是节点图。 该图中的每个节点（工作单元）都包含要在设备上执行的动作，
 最常见的动作是数据并行设备Kernel调用。 图 2-17 显示了具有四个节点的示例图，其中每个节点都可以被视为设备Kernel调用。
@@ -297,16 +377,28 @@ SYCL 执行模型中的一个基本概念是节点图。 该图中的每个节�
 有多种机制可用于定义将在设备上执行的代码，但一个简单的示例展示了如何识别此类代码。 
 即使示例中的模式乍一看很复杂，但该模式在所有设备代码定义中保持相同，因此很快就成为第二天性。
 
-{\color{red} Submission of device code }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.18.png}
+	\caption{\textit{提交设备代码}}
+\end{figure}
 
 作为最后一个参数传递给parallel\_for 的代码（定义为图2-18 中的lambda 表达式）是要在设备上执行的设备代码。 
 在这种情况下，parallel\_for 是让我们区分设备代码和主机代码的构造。 
 parallel\_for 是一小组设备调度机制之一，所有成员都是处理程序类，定义要在设备上执行的代码。 
 图 2-19 给出了处理程序类的简化定义。
 
-{\color{red} Simplified definition of member functions in the handler class }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.19.png}
+	\caption{\textit{处理程序类中成员函数的简化定义}}
+\end{figure}
 
-{\color{red} Simplified definition of member functions in the queue class that act as shorthand notation for equivalent functions in the handler class}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.20.png}
+	\caption{\textit{简化了队列类中成员函数的定义，这些函数充当处理程序类中等效函数的简写表示法}}
+\end{figure}
 
 除了调用处理程序类的成员来提交设备代码之外，还有队列类的成员允许提交工作。 
 图 2-20 中所示的队列类成员是简化某些模式的快捷方式，我们将在以后的章节中看到这些快捷方式的使用。
@@ -324,21 +416,29 @@ Parallel\_for 位于提交给队列的命令组 (CG) 内，队列定义要在其
 
 处理程序类包含一小组成员函数，这些函数定义执行任务图节点时要执行的动作。 图 2-21 总结了这些动作。
 
-{\color{blue} TABLE }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.21.png}
+	\caption{\textit{触发设备代码，以及显式的内存操作}}
+\end{figure}
 
 一个命令组内最多可以调用图 2-21 中的一个动作（调用多个动作是错误的），并且每个提交调用只能将一个命令组提交到队列中。 
 其结果是，每个任务图节点都存在图 2-21 中的单个（或可能没有）动作，
 该动作将在满足节点依赖性并且运行时确定可以安全执行时执行。
 
 \begin{remark}
-	a command group must have at most one action within it, such as a kernel launch or explicit memory operation.
+命令组中最多只能有一个操作，例如Kernel启动或显式内存操作。
 \end{remark}
 
 代码在未来异步执行的想法是作为主机程序的一部分在 CPU 上运行的代码与将来在满足依赖性时运行的设备代码之间的关键区别。 
 命令组通常包含每个类别的代码，其中定义依赖关系的代码作为主机程序的一部分运行（以便运行时知道依赖关系是什么），
 而设备代码则在满足依赖关系后运行。
 
-{\color{red} Submission of device code }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.22.png}
+	\caption{\textit{提交设备代码}}
+\end{figure}
 
 图 2-22 中有三类代码：
 
@@ -376,7 +476,11 @@ Parallel\_for 位于提交给队列的命令组 (CG) 内，队列定义要在其
 	当设备和主机代码需要分散时，这非常方便，并且可能会带来更高的性能。
 \end{enumerate}
 
-{\color{red} A simple host\_task }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F2.23.png}
+	\caption{\textit{简单的host\_task 例子}}
+\end{figure}
 
 图 2-23 演示了一个简单的主机任务，当满足任务图依赖性时，它使用 std::cout 输出文本。 
 请记住，主机任务是与主机程序的其余部分异步执行的。 

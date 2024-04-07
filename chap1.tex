@@ -94,7 +94,12 @@ DPC++ 编译器有多个发行版，增加了额外的工具和库，可作为�
 oneAPI 工具（包括 DPC++ 编译器）可免费获取（www.oneapi.io/implements）。
 
 \subsection{Hello, world! 和 SYCL 程序剖析}
-{\color{red} 你好数据并行编程}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F1.1.png}
+	\caption{\textit{你好数据并行编程。}}
+\end{figure}
 
 图 1-1 显示了 SYCL 程序示例。 编译并运行它会打印以下内容：
 
@@ -314,7 +319,11 @@ C++ 的其余部分在Kernel中是公平的游戏，包括Functor、lambda 表�
 
 \textbf{Kernel：矢量加法 (DAXPY)}
 
-{\color{red} Fortran、C/C++ 和 SYCL 中的 DAXPY 计算 }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F1.2.png}
+	\caption{\textit{Fortran、C/C++ 和 SYCL 中的 DAXPY 计算。}}
+\end{figure}
 
 对于任何处理过计算复杂代码的程序员来说，Kernel都应该感到熟悉。 
 考虑实施 DAXPY，它代表“双精度 A 乘以 X 加 Y”。 是几十年来的经典例子。 
@@ -339,7 +348,12 @@ C++ 的其余部分在Kernel中是公平的游戏，包括Functor、lambda 表�
 第 3 章开始讨论将我们的程序视为异步任务图，第 8 章极大地扩展了这个概念。
 
 \subsubsection{当我们犯错误时的竞争条件}
-{\color{red} 添加竞争条件来说明异步的要点}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F1.3.png}
+	\caption{\textit{添加竞争条件来说明异步的要点。}}
+\end{figure}
 
 在我们的第一个代码示例（图 1-1）中，我们专门在第 19 行执行了“等待”，以防止第 21 行在结果可用之前写出结果中的值。 
 我们必须牢记这种异步行为。 在同一代码示例中还做了另一件微妙的事情 - 第 15 行使用 std::memcpy 来加载输入。 
@@ -446,14 +460,26 @@ C++11 中引入了对 lambda 表达式的支持。 它们用于创建匿名函�
 	\item body 是函数体。 对于 SYCL Kernel，该Kernel的内容有一些限制（请参阅本章前面的“Kernel代码”部分）。
 \end{itemize}
 
-{\color{red} C++ 代码中的 Lambda 表达式 }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F1.4.png}
+	\caption{\textit{C++ 代码中的 Lambda 表达式。}}
+\end{figure}
 
-{\color{red} 图 1-4 中 lambda 表达式演示代码的输出 }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F1.5.png}
+	\caption{\textit{图 1-4 中 lambda 表达式演示代码的输出。}}
+\end{figure}
 
 图 1-4 显示了一个 C++ lambda 表达式，它通过值捕获一个变量 i，通过引用捕获另一个变量 j。 
 它还具有一个参数 k0 和另一个通过引用接收的参数 l0。 运行该示例将产生如图 1-5 所示的输出。
 
-{\color{red} 函数对象而不是 lambda 表达式（第 10 章中有更多介绍）}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F1.6.png}
+	\caption{\textit{函数对象而不是 lambda 表达式（第 10 章中有更多介绍）。}}
+\end{figure}
 
 我们可以将 lambda 表达式视为函数对象的实例，但编译器为我们创建了类定义。 
 例如，我们在前面的示例中使用的 lambda 表达式类似于图 1-6 中所示的类实例。 

@@ -24,7 +24,11 @@ Buffer是数据的高级抽象。 Buffer不一定绑定到单个位置或虚拟�
 事实上，运行时可以自由地使用内存中的许多不同位置（甚至跨不同的设备）来表示Buffer，
 但运行时必须确保始终为我们提供一致的数据视图。 Buffer可以在主机和任何设备上访问。
 
-{\color{red} Buffer 类定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.1.png}
+	\caption{\textit{Buffer 类定义 }}
+\end{figure}
 
 Buffer类是一个具有三个模板参数的模板类，如图 7-1 所示。 第一个模板参数是Buffer将包含的对象的类型。 
 此类型必须是设备可复制的，这扩展了 C++ 定义的普通可复制的概念。 
@@ -37,7 +41,11 @@ Buffer类是一个具有三个模板参数的模板类，如图 7-1 所示。 �
 \subsubsection{Buffer创建}
 在下图中，我们展示了创建Buffer对象的几种方法。 让我们浏览一下示例并查看每个实例。
 
-{\color{red} 创建Buffer，第一部分}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.2.png}
+	\caption{\textit{创建Buffer，第一部分 }}
+\end{figure}
 
 我们在图 7-2 中创建的第一个Buffer b1 是一个包含 10 个整数的二维Buffer。 
 我们显式传递所有模板参数，甚至显式传递 buffer\_allocator<T> 的默认值作为分配器类型。 
@@ -57,7 +65,11 @@ Buffer b4 展示了如何执行此操作，在调用其构造函数的范围之�
 使用Buffer来有效包装现有的 C++ 分配是一种常见模式，这些分配可能已经使用数据进行了初始化。 
 我们可以通过将初始值源传递给Buffer构造函数来做到这一点。 这样做可以让我们做几件事，我们将在下一个示例中看到。
 
-{\color{red} 创建Buffer，第二部分}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.3.png}
+	\caption{\textit{创建Buffer，第二部分 }}
+\end{figure}
 
 在图 7-3 中，Buffer b5 创建一个包含四个双精度数的一维Buffer。 
 除了指定Buffer大小的范围之外，我们还将指向 C 数组 myDoubles 的主机指针传递给Buffer构造函数。 
@@ -83,7 +95,11 @@ Buffer也可以使用 C++ 共享指针对象进行初始化。
 如果我们的应用程序已经使用共享指针，这非常有用，因为这种初始化方法将正确计算引用并确保内存不会被释放。 
 Buffer b7 创建一个包含单个整数的Buffer，并使用共享指针对其进行初始化。
 
-{\color{red} 创建Buffer，第三部分}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.4.png}
+	\caption{\textit{创建Buffer，第三部分 }}
+\end{figure}
 
 容器通常用于现代 C++ 应用程序，示例包括 std::array、std::vector、std::list 或 std::map。 
 我们可以通过两种不同的方式使用容器初始化一维Buffer。 第一种方式，如图 7-4 中的Buffer b8 所示，使用输入迭代器。 
@@ -107,7 +123,11 @@ Buffer创建的最后一个示例说明了Buffer类的另一个功能。 可以�
 
 \subsubsection{Buffer 属性}
 
-{\color{red} Buffer属性}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.5.png}
+	\caption{\textit{Buffer属性 }}
+\end{figure}
 
 还可以使用改变其行为的特殊属性来创建Buffer。 
 在图 7-5 中，我们将通过一个示例介绍三个不同的可选Buffer属性，并讨论如何使用它们。 
@@ -175,7 +195,11 @@ Buffer表示的数据不能通过Buffer对象直接访问。 相反，我们必�
 访问器对象是从模板化访问器类实例化的。 该类有五个模板参数。 第一个参数是正在访问的数据的类型。 
 这应该与相应Buffer存储的数据类型相同。 同样，第二个参数描述数据和Buffer的维度，默认值为 1。
 
-{\color{red} 访问模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.6.png}
+	\caption{\textit{访问模式 }}
+\end{figure}
 
 接下来的三个模板参数对于访问器来说是唯一的。 第一个是访问模式。 访问模式描述了我们打算如何在程序中使用访问器。 
 图 7-6 列出了可能的模式。 我们将在第 8 章中了解如何使用这些模式来命令Kernel的执行和执行数据移动。
@@ -186,7 +210,11 @@ Buffer表示的数据不能通过Buffer对象直接访问。 相反，我们必�
 当开始应用程序开发时，简单地不指定访问模式是安全且简洁的，
 然后我们可以根据应用程序的性能关键区域的分析来细化访问模式。
 
-{\color{red} 访问目标}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.7.png}
+	\caption{\textit{访问目标 }}
+\end{figure}
 
 下一个模板参数是访问目标。 Buffer是数据的抽象，不描述数据的存储位置和方式。 
 访问目标描述了我们正在访问数据的位置。 图 7-7 列出了两个可能的访问目标。
@@ -213,7 +241,11 @@ SYCL 的早期版本对本地内存有特殊的访问目标，但 SYCL 2020 以�
 这是我们将在接下来的示例中使用的样式，因为它非常易于理解并且紧凑。
 
 \subsubsection{访问器创建}
-{\color{red} 创建简单的访问器}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.8.png}
+	\caption{\textit{创建简单的访问器 }}
+\end{figure}
 
 图 7-8 显示了一个示例程序，其中包含我们开始使用访问器所需的一切。 
 在此示例中，我们有三个Buffer A、B 和 C。
@@ -247,7 +279,11 @@ SYCL 的早期版本对本地内存有特殊的访问目标，但 SYCL 2020 以�
 如果运行时有更多关于我们计划如何使用我们创建的访问器的信息，它可能会做得更好。 
 然而，在我们讨论执行此操作的示例之前，我们应该首先介绍另一个工具 - 推导标签。
 
-{\color{red} 推导标签}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.9.png}
+	\caption{\textit{推导标签 }}
+\end{figure}
 
 推导标签是一种表达访问者所需的访问模式和目标组合的紧凑方式。 
 使用推导标签时，它会作为参数传递给访问器的构造函数。 
@@ -255,7 +291,11 @@ SYCL 的早期版本对本地内存有特殊的访问目标，但 SYCL 2020 以�
 从而提供一种简单的方法来覆盖这些模板参数的默认值。 
 我们还可以手动指定所需的模板参数，但标签提供了一种更简单、更紧凑的方式来获得相同的结果，而无需拼写出完全模板化的访问器。
 
-{\color{red} 使用指定用法创建访问器}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F7.10.png}
+	\caption{\textit{使用指定用法创建访问器 }}
+\end{figure}
 
 让我们以前面的示例为例，重写它以添加扣除标签。 这个新的改进示例如图 7-10 所示。
 

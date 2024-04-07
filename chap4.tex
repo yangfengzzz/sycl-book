@@ -44,7 +44,11 @@
 但它必须是保守的 - 如果编译器不够智能或没有足够的信息来证明并行执行始终是安全的，
 则它 必须保留循环的顺序语义以确保正确性。
 
-{\color{red} 将向量加法表示为串行循环 }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.1.png}
+	\caption{\textit{将向量加法表示为串行循环}}
+\end{figure}
 
 考虑图 4-1 中的循环，它描述了一个简单的向量加法。 
 即使在这样的简单情况下，证明循环可以并行执行也不是微不足道的：只有当 c 不与 a 或 b 重叠时，并行执行才是安全的，
@@ -62,7 +66,11 @@
 并行Kernel不是循环并且没有迭代。 相反，Kernel描述了单个操作，
 该操作可以多次实例化并应用于不同的输入数据； 当并行启动Kernel时，该操作的多个实例可能会同时执行。
 
-{\color{red} 循环重写（在伪代码中）为并行Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.2.png}
+	\caption{\textit{循环重写（在伪代码中）为并行Kernel}}
+\end{figure}
 
 图 4-2 显示了使用伪代码重写为Kernel的简单循环示例。 
 该Kernel中的并行机会是清晰明确的：Kernel可以由任意数量的实例并行执行，并且每个实例独立地应用于单独的数据块。 
@@ -86,7 +94,11 @@ SYCL 中与并行性相关的所有多维量都使用相同的约定：维度从
 无论多维数量被写为列表（例如，在构造函数中）或类支持多个下标运算符，此编号都从左到右应用（从左侧的维度 0 开始）。 
 此约定与标准 C++ 中多维数组的行为一致。
 
-{\color{red} 映射到线性索引的大小 （2， 8） 的二维范围}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.3.png}
+	\caption{\textit{映射到线性索引的大小 （2， 8） 的二维范围}}
+\end{figure}
 
 使用 SYCL 约定将二维空间映射到线性索引的示例如图 4-3 所示。 
 我们当然可以自由地打破这个约定并采用我们自己的线性化索引的方法，
@@ -152,7 +164,11 @@ SPMD 编程模型的最大优势之一是它允许将相同的“程序”映射
 同一程序的实例可以通过管道传输、打包在一起并使用 SIMD 指令执行、分布在多个硬件线程上或三者的混合。
 
 \subsubsection{了解基本数据并行Kernel}
-{\color{red} 基本并行Kernel的执行空间，显示为 64 个“项”的 2D 范围}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.4.png}
+	\caption{\textit{基本并行Kernel的执行空间，显示为 64 个“项”的 2D 范围}}
+\end{figure}
 
 基本并行Kernel的执行空间被称为它的执行范围，并且Kernel的每个实例被称为一个“项”。 图 4-4 对此进行了示意性表示。
 
@@ -164,7 +180,11 @@ SPMD 编程模型的最大优势之一是它允许将相同的“程序”映射
 例如，我们有责任确保对内存的并发访问受到原子内存操作（参见第 19 章）的适当保护，以防止竞争条件。
 
 \subsubsection{编写基本数据并行Kernel}
-{\color{red} 用 parallel\_for 表达向量加法核 }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.5.png}
+	\caption{\textit{用 parallel\_for 表达向量加法核}}
+\end{figure}
 
 基本数据并行Kernel使用parallel\_for 函数表示。 
 图 4-5 显示了如何使用这个函数来表达向量加法，这是我们对“Hello, world!”的看法。 用于并行加速器编程。
@@ -173,7 +193,11 @@ SPMD 编程模型的最大优势之一是它允许将相同的“程序”映射
 第二个是要对该范围中的每个索引执行的Kernel函数。 
 有几个不同的类可以被接受作为Kernel函数的参数，并且应该使用哪个类取决于哪个类公开所需的功能 - 我们稍后将重新讨论这一点。
 
-{\color{red} 用 parallel\_for 表达矩阵加法核}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.6.png}
+	\caption{\textit{用 parallel\_for 表达矩阵加法核}}
+\end{figure}
 
 图 4-6 显示了使用该函数非常类似地表达矩阵加法，除了二维数据之外，它与向量加法（在数学上）相同。 
 这由Kernel反映出来——两个代码片段之间的唯一区别是所使用的 range 和 id 类的维度！ 
@@ -184,7 +208,11 @@ SPMD 编程模型的最大优势之一是它允许将相同的“程序”映射
 当Kernel同时操作不同维度的数据时，或者当Kernel的内存访问模式比直接使用“项”的 id 描述的更复杂时，
 以这种方式使用多个索引可以提高可读性。
 
-{\color{red} 用 parallel\_for 表达平方矩阵的朴素矩阵乘法核 }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.7.png}
+	\caption{\textit{用 parallel\_for 表达平方矩阵的朴素矩阵乘法核}}
+\end{figure}
 
 例如，图 4-7 中的矩阵乘法Kernel必须提取索引的两个单独分量，以便能够描述两个矩阵的行和列之间的点积。 
 作者认为，一致使用多个下标运算符（例如，[j][k]）比混合多种索引模式和构造二维 id 对象（例如 id(j,k)）更具可读性，
@@ -192,7 +220,11 @@ SPMD 编程模型的最大优势之一是它允许将相同的“程序”映射
 
 本章其余部分的示例都使用多个下标运算符，以确保所访问的缓冲区的维数不存在歧义。
 
-{\color{red} 将矩阵乘法工作映射到执行范围内的“项”}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.8.png}
+	\caption{\textit{将矩阵乘法工作映射到执行范围内的“项”}}
+\end{figure}
 
 图 4-8 中的图表显示了矩阵乘法Kernel中的工作如何映射到各个“项”。 
 请注意，“项”数是根据输出范围的大小得出的，
@@ -208,7 +240,11 @@ A 矩阵和 B 矩阵的一个（不连续）列。
 范围表示一维、二维或三维范围。 范围的维度是模板参数，因此必须在编译时已知，
 但每个维度的大小是动态的，并在运行时传递给构造函数。 range 类的实例用于描述并行构造的执行范围和缓冲区的大小。
 
-{\color{red} range 类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.9.png}
+	\caption{\textit{range 类的简化定义}}
+\end{figure}
 
 图 4-9 显示了范围类的简化定义，显示了构造函数和查询其范围的各种方法。
 
@@ -218,7 +254,11 @@ id 表示一维、二维或三维范围的索引。
 id 的定义在许多方面与 range 相似：它的维数也必须在编译时已知，
 并且它可用于索引并行构造中Kernel的单个实例或缓冲区中的偏移量。
 
-{\color{red} id 类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.10.png}
+	\caption{\textit{id 类的简化定义}}
+\end{figure}
 
 如图 4-10 中 id 类的简化定义所示，id 在概念上只不过是一个、两个或三个整数的容器。 
 我们可用的操作也非常简单：我们可以查询每个维度中索引的组成部分，并且可以执行简单的算术来计算新的索引。
@@ -236,7 +276,11 @@ id 的定义在许多方面与 range 相似：它的维数也必须在编译时�
 “项” 代表Kernel函数的单个实例，封装了Kernel的执行范围和该范围内的实例索引（分别使用范围和 id）。 
 与 range 和 id 一样，它的维数必须在编译时已知。
 
-{\color{red} item 类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.11.png}
+	\caption{\textit{item 类的简化定义}}
+\end{figure}
 
 图 4-11 给出了“项”类的简化定义。 
 item 和 id 之间的主要区别在于 item 公开了额外的函数来查询执行范围的属性（例如，其大小）以及计算线性化索引的便利函数。 
@@ -251,16 +295,22 @@ item 和 id 之间的主要区别在于 item 公开了额外的函数来查询�
 然而，它并不完全是规定性的，因为组本身可以按任何顺序执行，并且实现对于每种类型的组如何映射到硬件资源保留了一定的自由度。 
 这种规范性和描述性编程的结合使我们能够针对局部性设计和调整Kernel，而不会破坏其可移植性。
 
-与基本数据并行Kernel一样，ND 范围Kernel以 SPMD 风格编写，其中所有Work-Items都执行应用于多个数据的相同Kernel“程序”。 
+与基本数据并行Kernel一样，ND 范围Kernel以 SPMD 风格编写，
+其中所有Work-Items都执行应用于多个数据的相同Kernel“程序”。 
 主要区别在于每个程序实例都可以查询其在包含它的组中的位置，并且可以访问特定于每种类型的组的附加功能（请参见第 9 章）。
 
 \subsubsection{了解显式 ND 范围并行Kernel}
 ND范围Kernel的执行范围分为Work-Groups、Sub-Groups和Work-Items。 
-ND-range 表示总的执行范围，它被划分为统一大小的Work-Groups（即，Work-Groups大小必须在每个维度上精确地除以 ND-range 大小）。 
+ND-range 表示总的执行范围，它被划分为统一大小的Work-Groups
+（即，Work-Groups大小必须在每个维度上精确地除以 ND-range 大小）。 
 每个Work-Groups可以根据实施进一步划分为Sub-Groups。 
 了解为Work-Items和每种类型的组定义的执行模型是编写正确且可移植的程序的重要组成部分。
 
-{\color{red} 三维 ND 范围分为Work-Groups、Sub-Groups和Work-Items}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.12.png}
+	\caption{\textit{三维 ND 范围分为Work-Groups、Sub-Groups和Work-Items}}
+\end{figure}
 
 图 4-12 显示了大小为 (8, 8, 8) 的 ND 范围分为 8 个大小为 (4, 4, 4) 的Work-Groups的示例。 
 每个Work-Groups包含 16 个一维Sub-Groups，每组有 4 个Work-Items。 
@@ -281,7 +331,8 @@ Work-Items代表核函数的各个实例。
 
 \paragraph{Work-Groups}
 
-ND 范围内的Work-Items被组织成Work-Groups。 Work-Groups可以按任何顺序执行，不同Work-Groups中的Work-Items不能相互通信，
+ND 范围内的Work-Items被组织成Work-Groups。 Work-Groups可以按任何顺序执行，
+不同Work-Groups中的Work-Items不能相互通信，
 除非通过对全局内存的原子内存操作（参见第 19 章）。 
 然而，当使用某些构造时，Work-Groups内的Work-Items具有一些调度保证，并且该局部性提供了一些附加功能：
 
@@ -294,13 +345,15 @@ ND 范围内的Work-Items被组织成Work-Groups。 Work-Groups可以按任何�
 	提供通用并行模式的实现，例如归约和扫描（参见第 14 章）。
 \end{enumerate}
 
-Work-Groups中Work-Items的数量通常在运行时为每个Kernel配置，因为最佳分组将取决于可用并行度（即 ND 范围的大小）和目标设备的属性 。 
+Work-Groups中Work-Items的数量通常在运行时为每个Kernel配置，
+因为最佳分组将取决于可用并行度（即 ND 范围的大小）和目标设备的属性 。 
 我们可以使用设备类的查询函数确定特定设备支持的每个Work-Groups的最大Work-Items数（参见第 12 章），
 并且我们有责任确保每个Kernel请求的Work-Groups大小 已验证。
 
 Work-Groups执行模型中有一些微妙之处值得强调。
 
-首先，虽然Work-Groups中的Work-Items被调度到单个计算单元，但是Work-Groups的数量和计算单元的数量之间不需要有任何关系。 
+首先，虽然Work-Groups中的Work-Items被调度到单个计算单元，
+但是Work-Groups的数量和计算单元的数量之间不需要有任何关系。 
 事实上，ND 范围内的Work-Groups数量可能比给定设备可以同时执行的Work-Groups数量大很多倍！ 
 我们可能会尝试编写通过依赖非常聪明的设备特定调度来跨Work-Groups同步的Kernel，
 但我们强烈建议不要这样做——这样的Kernel今天可能可以工作，但不能保证它们将来也能工作 实现，
@@ -308,7 +361,8 @@ Work-Groups执行模型中有一些微妙之处值得强调。
 
 其次，虽然Work-Groups中的工作“项”被安排为可以相互合作，
 但它们不需要提供任何具体的前进进度保证——在障碍和集体之间顺序执行Work-Groups内的工作“项”是一种 有效实施。 
-仅当使用提供的Barrier和集合函数执行时，同一Work-Groups中的Work-Items之间的通信和同步才能保证安全，并且手工编码的同步例程可能会死锁。
+仅当使用提供的Barrier和集合函数执行时，同一Work-Groups中的Work-Items之间的通信和同步才能保证安全，
+并且手工编码的同步例程可能会死锁。
 
 \begin{remark}[在Work-Groups中思考]
 	Work-Groups在许多方面与其他编程模型中的任务概念相似（例如，线程构建块）：任务可以按任何顺序执行（由调度程序控制）;
@@ -342,18 +396,31 @@ Work-Groups执行模型中有一些微妙之处值得强调。
 Sub-Groups的某些方面是由实现定义的，不在我们的控制范围内。 
 然而，对于给定的设备、Kernel和 ND 范围的组合，Sub-Groups具有固定（一维）大小，
 我们可以使用Kernel类的查询函数来查询该大小（参见第 10 章和第 12 章） 。 
-默认情况下，每个Sub-Groups的Work-Items数量也由实现选择 - 我们可以通过在编译时请求特定的Sub-Groups大小来覆盖此行为，
+默认情况下，每个Sub-Groups的Work-Items数量也由实现选择 - 
+我们可以通过在编译时请求特定的Sub-Groups大小来覆盖此行为，
 但必须确保我们请求的Sub-Groups大小与设备兼容 。
 
-与Work-Groups一样，Sub-Groups中的Work-Items不需要提供任何特定的前进进度保证 - 实现可以自由地顺序执行Sub-Groups中的每个Work-Items，
+与Work-Groups一样，Sub-Groups中的Work-Items不需要提供任何特定的前进进度保证 - 
+实现可以自由地顺序执行Sub-Groups中的每个Work-Items，
 并且仅在Work-Items发生变化时才在Work-Items之间切换。 遇到Sub-Groups集体函数。 
 然而，在某些设备上，Work-Groups内的所有Sub-Groups都保证最终执行（取得进展），这是多种生产者-消费者模式的基石。 
 这是当前实现定义的行为，因此如果我们希望Kernel保持可移植性，我们就不能依赖Sub-Groups来取得进展。 
 我们期望 SYCL 的未来版本能够提供描述Sub-Groups进度保证的设备查询。
 
-{\color{red} 一种可能的Sub-Groups映射，其中Sub-Groups大小允许大于Work-Groups的最高编号（连续）维度的范围，因此Sub-Groups看起来是“环绕”}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.13.png}
+	\caption{\textit{一种可能的Sub-Groups映射，
+	其中Sub-Groups大小允许大于Work-Groups的最高编号（连续）维度的范围，因此Sub-Groups看起来是“环绕”}}
+\end{figure}
 
-{\color{red} 另一种可能的Sub-Groups映射，其中Sub-Groups大小不允许大于Work-Groups的最高编号（连续）维度的范围}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.14.png}
+	\caption{\textit{另一种可能的Sub-Groups映射，
+	其中Sub-Groups大小不允许大于Work-Groups的最高编号（连续）维度的范围}}
+\end{figure}
 
 当为特定设备编写Kernel时，Work-Items到Sub-Groups的映射是已知的，并且我们的代码通常可以利用此映射的属性来提高性能。 
 然而，一个常见的错误是假设因为我们的代码可以在一台设备上运行，所以它也可以在所有设备上运行。 
@@ -371,9 +438,17 @@ SYCL 当前不提供查询Work-Items如何映射到Sub-Groups的方法，也不�
 
 \paragraph{编写显式 ND 范围数据并行Kernel}
 
-{\color{red} 用 ND 范围parallel\_for表达朴素矩阵乘法核 }
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.15.png}
+	\caption{\textit{用 ND 范围parallel\_for表达朴素矩阵乘法核}}
+\end{figure}
 
-{\color{red} 将矩阵乘法映射到Work-Groups和Work-Items}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.16.png}
+	\caption{\textit{将矩阵乘法映射到Work-Groups和Work-Items}}
+\end{figure}
 
 图 4-15 使用 ND 范围并行Kernel语法重新实现了我们之前看到的矩阵乘法Kernel，
 图 4-16 中的图表显示了该Kernel中的工作如何映射到每个Work-Groups中的Work-Items。 
@@ -397,7 +472,11 @@ ND 范围Kernel可以使用本地访问器来描述应放置在Work-Groups本地
 nd\_range 使用 range 类的两个实例表示分组执行范围：一个表示全局执行范围，另一个表示每个Work-Groups的本地执行范围。 
 图 4-17 给出了 nd\_range 类的简化定义。
 
-{\color{red} nd\_range类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.17.png}
+	\caption{\textit{nd\_range类的简化定义}}
+\end{figure}
 
 可能有点令人惊讶的是 nd\_range 类根本没有提及Sub-Groups：Sub-Groups范围在构造过程中没有指定并且无法查询。 
 造成这一遗漏的原因有两个。 首先，Sub-Groups是一个低级实现细节，对于许多Kernel来说可以忽略。 
@@ -411,7 +490,11 @@ nd\_item 与 item 的不同之处在于如何查询和表示其在范围中的�
 例如，我们可以使用 get\_global\_id() 函数查询（全局）ND 范围中的“项”索引，
 或者使用 get\_local\_id() 函数查询“项”在其（本地）父Work-Groups中的索引。
 
-{\color{red} nd\_item类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.18.png}
+	\caption{\textit{nd\_item类的简化定义}}
+\end{figure}
 
 nd\_item 类还提供了用于获取描述“项”所属组和Sub-Groups的类句柄的函数。 
 这些类提供了用于查询 ND 范围中“项”索引的替代接口。
@@ -420,7 +503,11 @@ nd\_item 类还提供了用于获取描述“项”所属组和Sub-Groups的类�
 
 group 类封装了与Work-Groups相关的所有功能，简化的定义如图4-19所示。
 
-{\color{red} group 类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.19.png}
+	\caption{\textit{group 类的简化定义}}
+\end{figure}
 
 group 类提供的许多函数在 nd\_item 类中都有等效的函数：
 例如，调用 group.get\_group\_id() 相当于调用 item.get\_group\_id()，
@@ -432,7 +519,11 @@ group 类提供的许多函数在 nd\_item 类中都有等效的函数：
 并且很明显，parallel\_for 主体中的 get\_local\_range() 返回的范围是 组的范围。 
 仅使用 nd\_item 可以很容易地编写相同的代码，但读者可能会更难理解。
 
-{\color{red} 使用 group 类提高可读性}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.20.png}
+	\caption{\textit{使用 group 类提高可读性}}
+\end{figure}
 
 group 类启用的另一个强大选项是能够编写通过模板参数接受任何类型的组的通用组函数。 
 尽管 SYCL（尚未）定义正式的 Group“概念”（在 C++20 意义上），
@@ -446,10 +537,15 @@ group 类启用的另一个强大选项是能够编写通过模板参数接受�
 sub\_group类封装了与Sub-Groups相关的所有功能，简化的定义如图4-21所示。 
 与Work-Groups不同，sub\_group 类是访问Sub-Groups功能的唯一方法； 它的功能在 nd\_item 中没有重复。
 
-{\color{red} sub\_group 类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.21.png}
+	\caption{\textit{sub\_group 类的简化定义}}
+\end{figure}
 
 请注意，有单独的函数用于查询当前Sub-Groups中的Work-Items数以及Work-Groups内任何Sub-Groups中的最大Work-Items数。 
-这些是否不同以及如何不同取决于具体设备的Sub-Groups实现方式，但其目的是反映编译器目标Sub-Groups大小与运行时Sub-Groups大小之间的任何差异。 
+这些是否不同以及如何不同取决于具体设备的Sub-Groups实现方式，
+但其目的是反映编译器目标Sub-Groups大小与运行时Sub-Groups大小之间的任何差异。 
 例如，非常小的Work-Groups可以包含比编译时Sub-Groups大小更少的Work-Items，
 或者可以使用不同大小的Sub-Groups来处理不能被Sub-Groups大小整除的Work-Groups和维度。
 
@@ -488,7 +584,11 @@ Work-Groups对计算资源的调度是实现定义的，并且可能是动态的
 而且线性Work-Items访问连续的内存位置（以改进缓存局部性和矢量化行为）。 
 工作可以类似地跨组或各个组中的Work-Items进行分配，以进一步改善局部性。
 
-{\color{red} 具有独立数据和执行范围的Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.22.png}
+	\caption{\textit{具有独立数据和执行范围的Kernel}}
+\end{figure}
 
 这些工作分配模式很常见，我们预计 SYCL 的未来版本将引入语法糖来简化 ND 范围Kernel中工作分配的表达。
 
@@ -500,9 +600,14 @@ Work-Groups对计算资源的调度是实现定义的，并且可能是动态的
 
 我们根据自己的经验构建了两个指南来帮助我们驾驭这个复杂的空间。 
 这些指南应被视为初步建议，绝对不是为了取代我们自己的实验 - 
-在不同Kernel形式之间进行选择的最佳方法始终是花一些时间编写每个Kernel形式，以便了解哪种形式是最好的 适合我们的应用和开发风格。
+在不同Kernel形式之间进行选择的最佳方法始终是花一些时间编写每个Kernel形式，
+以便了解哪种形式是最好的 适合我们的应用和开发风格。
 
-{\color{red} 帮助为我们的Kernel选择正确的形式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F4.23.png}
+	\caption{\textit{帮助为我们的Kernel选择正确的形式}}
+\end{figure}
 
 第一个指南是图4-23所示的流程图，它根据以下条件选择Kernel形式：
 

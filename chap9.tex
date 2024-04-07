@@ -9,10 +9,15 @@
 在第 15、16 和 17 章中优化特定设备的程序以及在第 14 章中描述常见并行模式时，许多想法和概念非常重要。
 
 \subsection{Work-Groups和Work-Items}
-回想一下第 4 章，显式 ND 范围Kernel将Work-Items组织到Work-Groups中，并且同一Work-Groups中的所有Work-Items都有额外的调度保证。 
+回想一下第 4 章，显式 ND 范围Kernel将Work-Items组织到Work-Groups中，
+并且同一Work-Groups中的所有Work-Items都有额外的调度保证。 
 这个属性很重要，因为它意味着Work-Groups中的Work-Items可以合作解决问题。
 
-{\color{red} 大小 （8， 8） 的二维 ND 范围分为四个大小为 （4,4） 的Work-Groups}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.1.png}
+	\caption{\textit{大小 （8， 8） 的二维 ND 范围分为四个大小为 （4,4） 的Work-Groups }}
+\end{figure}
 
 图 9-1 显示了划分为Work-Groups的 ND 范围，其中每个Work-Groups由不同的颜色表示。 
 每个Work-Groups中的Work-Items可以安全地与共享相同颜色的其他Work-Items进行通信。

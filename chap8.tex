@@ -71,9 +71,17 @@ SYCL 允许以多种方式指定这些依赖性。
 我们将说明的两种模式是线性依赖链（其中一个任务在另一个任务之后执行）
 和“Y”模式（其中两个独立任务必须在连续任务之前执行）。
 
-{\color{red} 线性依赖链图}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.1.png}
+	\caption{\textit{线性依赖链图 }}
+\end{figure}
 
-{\color{red} “Y”模式依赖关系图}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.2.png}
+	\caption{\textit{“Y”模式依赖关系图 }}
+\end{figure}
 
 这些依赖模式的Graph如图 8-1 和 8-2 所示。 图 8-1 描述了一个线性依赖链。 
 第一个节点表示数据的初始化，而第二个节点表示将数据累积为单个结果的归约操作。 
@@ -83,20 +91,32 @@ SYCL 允许以多种方式指定这些依赖性。
 对于每种模式，我们将展示三种不同的实现。 第一个实现将使用有序队列。 第二个将使用基于事件的依赖关系。 
 最后一个实现将使用Buffer和访问器来表达命令组之间的数据依赖性。
 
-{\color{red} 具有顺序队列的线性依赖链}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.3.png}
+	\caption{\textit{具有顺序队列的线性依赖链 }}
+\end{figure}
 
 图 8-3 显示了如何使用有序队列来表达线性依赖链。 这个例子非常简单，因为中序队列的语义已经保证了命令组之间执行的顺序。 
 我们提交的第一个Kernel将数组的元素初始化为 1。然后下一个Kernel获取这些元素并将它们相加到第一个元素中。 
 由于我们的队列是有序的，因此我们不需要做任何其他事情来表示第二个Kernel在第一个Kernel完成之前不应执行。 
 最后，我们等待队列完成执行所有任务，并检查是否获得了预期结果。
 
-{\color{red} 事件的线性依赖链}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.4.png}
+	\caption{\textit{事件的线性依赖链 }}
+\end{figure}
 
 图 8-4 显示了使用无序队列和基于事件的依赖关系的同一示例。 在这里，我们捕获第一次调用 parallel\_for 返回的事件。 
 然后，第二个Kernel能够通过将其作为参数传递给depends\_on来指定对该事件及其代表的Kernel执行的依赖。 
 我们将在图 8-6 中看到如何使用定义Kernel的快捷方法之一来缩短第二个Kernel的表达式。
 
-{\color{red} 具有Buffer和访问器的线性依赖链}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.5.png}
+	\caption{\textit{具有Buffer和访问器的线性依赖链 }}
+\end{figure}
 
 图 8-5 使用Buffer和访问器而不是 USM 指针重写了我们的线性依赖链示例。 
 在这里，我们再次使用无序队列，但使用通过访问器指定的数据依赖性而不是基于事件的依赖性来排序命令组的执行。 
@@ -107,7 +127,11 @@ SYCL 允许以多种方式指定这些依赖性。
 它并不能保证原始主机内存已更新。 
 我们无法安全地访问原始主机内存，除非Buffer首先被破坏，或者除非我们使用更高级的机制，如第 7 章中描述的互斥机制。
 
-{\color{red} 具有顺序队列的“Y”模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.6.png}
+	\caption{\textit{具有顺序队列的“Y”模式 }}
+\end{figure}
 
 图 8-6 显示了如何使用有序队列表达“Y”模式。 在此示例中，我们声明两个数组：data1 和 data2。 
 然后，我们定义两个Kernel，每个Kernel将初始化其中一个数组。 
@@ -118,7 +142,11 @@ SYCL 允许以多种方式指定这些依赖性。
 这个求和Kernel依赖于之前的Kernel，但是这个线性链也被有序队列捕获。 
 最后，我们等待所有Kernel完成并验证我们是否成功计算了幻数。
 
-{\color{red} 带有事件的“Y”模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.7.png}
+	\caption{\textit{带有事件的“Y”模式 }}
+\end{figure}
 
 图 8-7 显示了我们的“Y”模式示例，其中使用无序队列而不是有序队列。 
 由于队列的顺序导致依赖关系不再是隐式的，因此我们必须使用事件显式指定命令组之间的依赖关系。 
@@ -130,7 +158,11 @@ SYCL 允许以多种方式指定这些依赖性。
 由于我们想要一次传递多个事件，因此我们使用接受事件 std::vector 的形式，
 但幸运的是，现代 C++ 通过自动将表达式 {e1, e2} 转换为适当的向量，为我们简化了这一过程。
 
-{\color{red} 带访问器的“Y”型模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F8.8.png}
+	\caption{\textit{带访问器的“Y”型模式 }}
+\end{figure}
 
 在我们的最后一个示例中，如图 8-8 所示，我们再次用Buffer和访问器替换 USM 指针和事件。 
 此示例将两个数组 data1 和 data2 表示为Buffer对象。 
@@ -139,7 +171,8 @@ SYCL 允许以多种方式指定这些依赖性。
 由于我们之前已经声明了这些Buffer的访问器，因此运行时能够正确排序这些Kernel的执行。 
 此外，当我们声明访问器 b 时，我们还向运行时提供额外的信息。 
 我们添加访问标记 read\_only 让运行时知道我们只会读取这些数据，不会生成新值。 
-正如我们在线性依赖链的Buffer和访问器示例中看到的那样，我们的最终Kernel通过更新第三个Kernel中生成的值来对自身进行排序。 
+正如我们在线性依赖链的Buffer和访问器示例中看到的那样，
+我们的最终Kernel通过更新第三个Kernel中生成的值来对自身进行排序。 
 我们通过声明一个主机访问器来检索计算的最终值，
 该主机访问器将等待最终Kernel完成执行，然后将数据移回主机，在主机上我们可以读取数据并断言我们计算了正确的结果。
 
