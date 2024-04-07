@@ -37,6 +37,10 @@ SYCL 为并行化我们的应用程序或从头开始开发并行应用程序铺
 此外，与任何处理器类型一样，CPU 可能因供应商而异，甚至因产品一代而异。 
 适用于一种 CPU 的最佳实践可能并非适用于其他 CPU 和配置的最佳实践。
 
+\begin{remark}
+	要在 CPU 上实现最佳性能，请尽可能多地了解 CPU 架构的特征！
+\end{remark}
+
 \subsection{多核 CPU 的基础知识}
 多核 CPU 的出现和快速发展推动了共享内存并行计算平台的广泛接受。 
 CPU 在笔记本电脑、台式机和服务器级别提供并行计算平台，使其无处不在，几乎无处不在。 
@@ -51,6 +55,8 @@ CPU 架构最常见的形式是高速缓存一致性非均匀内存访问 (cc-NU
 相反，延迟取决于数据在系统中的存储位置。 在良好的情况下，数据来自直接连接到代码运行的套接字的内存。 
 在糟糕的情况下，数据必须来自连接到系统中较远的套接字的内存，
 并且由于 cc-NUMA CPU 系统上套接字之间互连的跳数，内存访问的成本可能会增加。
+
+{\color{red} 通用多核CPU系统}
 
 图 16-1 显示了具有 cc-NUMA 内存的通用 CPU 架构。 
 这是一种简化的系统架构，包含当今通用多插槽系统中的核心和内存组件。 
@@ -86,6 +92,8 @@ CPU Kernel通过执行指令来执行其工作，Kernel知道如何执行的具�
 SIMD 指令允许通过使用大于正在处理的数据的基本单位的寄存器和硬件，在单个Kernel上同时执行多个计算。 
 例如，使用 512 位寄存器，我们可以使用一条机器指令执行 8 个 64 位计算。
 
+{\color{red} 在 CPU 硬件线程中执行 SIMD}
+
 理论上，图 16-2 中所示的示例可以使我们的速度提高八倍。 
 实际上，它可能会有所缩减，因为八倍加速的一部分用于消除一个瓶颈并暴露下一个瓶颈，例如内存吞吐量。 
 一般来说，使用 SIMD 的性能优势因具体场景而异，在少数情况下，
@@ -97,6 +105,8 @@ SIMD 指令允许通过使用大于正在处理的数据的基本单位的寄存
 
 带有 SIMD 单元的 cc-NUMA CPU 架构构成了多核处理器的基础，
 它可以以至少五种不同的方式利用从指令级并行开始的广泛并行性，如图 16-3 所示。
+
+{\color{red} 并行执行指令的五种方式}
 
 在图16-3中，指令级并行可以通过单线程内标量指令的乱序执行和SIMD并行来实现。 
 线程级并行可以通过在同一核心或不同规模的多个核心上执行多个线程来实现。 
@@ -120,10 +130,22 @@ SIMD 指令允许通过使用大于正在处理的数据的基本单位的寄存
 与其他并行处理硬件（例如 GPU）一样，为 CPU 提供足够大的数据元素集进行处理非常重要。 
 为了演示利用多级并行处理大量数据的重要性，请考虑一个简单的 C++ STREAM Triad 程序，如图 16-4 所示。
 
+{\color{red} STREAM Triad C++ 循环}
+
+\begin{remark}[STREAM TRIAD WORKLOAD 的说明]
+Stream triad workload （www.cs.virginia.edu/stream） 
+是 CPU 供应商用来演示内存带宽功能的重要且流行的基准测试工作负载。
+我们使用流三元组Kernel来演示并行Kernel的代码生成，以及通过本章中描述的技术实现显著提高性能的计划方式。
+流三元组是一个相对简单的工作负载，但足以以易于理解的方式显示许多优化。
+布里斯托大学有一个流实现，称为Babelstream，其中包括带有sYCL版本的C++。
+\end{remark}
+
 STREAM Triad 循环可以在使用单个CPU 核心进行串行执行的CPU 上简单地执行。 
 优秀的 C++ 编译器将执行循环向量化，为具有利用指令级 SIMD 并行性的硬件的 CPU 生成 SIMD 代码。 
 例如，对于支持 AVX-512 的 Intel Xeon 处理器，Intel C++ 编译器会生成如图 16-5 所示的 SIMD 代码。 
 至关重要的是，编译器对代码的转换通过在每次循环迭代中执行更多工作（使用 SIMD 指令和循环展开）减少了循环迭代次数。
+
+{\color{red} AVX-512}
 
 如果我们尝试在 CPU 上执行此函数，它可能会在较小的数组大小下运行良好，
 但效果并不好，因为它不利用 CPU 的任何多核或线程功能。 
@@ -134,8 +156,12 @@ STREAM Triad 循环可以在使用单个CPU 核心进行串行执行的CPU 上�
 为了提高 STREAM Triad Kernel的性能，
 我们可以通过将循环转换为 parallel\_for Kernel来计算一系列可以并行处理的数据元素。
 
+{\color{red} SYCL STREAM Triad parallel\_for Kernel代码}
+
 该 STREAM Triad SYCL 并行Kernel的主体与在 CPU 上以串行 C++ 执行的 STREAM Triad 循环的主体完全相同，
 如图 16-6 所示。
+
+{\color{red} STREAM Triad 并行Kernel的映射}
 
 尽管并行Kernel与使用循环的串行 C++ 编写的 STREAM Triad 函数非常相似，但它的运行速度要快得多，
 因为 parallel\_for 允许在多个Kernel上并行处理数组的不同元素。 
@@ -155,6 +181,10 @@ STREAM Triad 循环可以在使用单个CPU 核心进行串行执行的CPU 上�
 因为它为每个处理器核心提供了要执行的工作的选择。 
 如果一个软件线程正在等待另一线程产生数据，则处理器核心可以切换到准备运行的不同软件线程，而不会使处理器核心空闲。
 
+\begin{remark}[选择如何绑定和调度线程]
+选择一种有效的方案来在线程之间分区和调度工作对于在 CPU 和其他设备类型上调整应用程序非常重要。后续部分将介绍一些技术。
+\end{remark}
+
 \subsubsection{线程亲和力洞察}
 线程亲和性指定执行特定线程的 CPU 核心。 
 如果线程在核心之间移动，性能可能会受到影响，例如，如果线程不在同一核心上执行，
@@ -168,9 +198,11 @@ DPCPP\_CPU\_PLACES、DPCPP\_CPU\_NUM\_CUS 和 DPCPP\_CPU\_SCHEDULE 将线程绑�
 第一个是环境变量 DPCPP\_CPU\_CU\_AFFINITY。 
 使用这些环境变量控件进行调整既简单又成本低，但会对许多应用程序产生巨大影响。 该环境变量的说明如图16-8所示。
 
+{\color{red} DPCPP\_CPU\_CU\_AFFINITY 环境变量}
+
 当指定环境变量 DPCPP\_CPU\_CU\_AFFINITY 时，软件线程通过以下公式绑定到硬件线程：
 
-展开：boundHT = ( tid mod numHT ) + (tid mod numSocket) × numHT) 关闭：boundHT = tid mod (numSocket × numHT )
+spread: boundHT = ( tid mod numHT ) + (tid mod numSocket) × numHT) close: boundHT = tid mod (numSocket × numHT )
 
 其中
 
@@ -187,22 +219,26 @@ DPCPP\_CPU\_PLACES、DPCPP\_CPU\_NUM\_CUS 和 DPCPP\_CPU\_SCHEDULE 将线程绑�
 假设我们在双核双插槽系统上运行一个具有八个线程的程序，换句话说，我们有四个核心，总共有八个线程要编程。 
 图 16-9 显示了线程如何映射到不同 DPCPP\_CPU\_CU\_AFFINITY 设置的硬件线程和Kernel的示例。
 
+{\color{red} 使用硬件线程将线程映射到Kernel}
+
 与环境变量 DPCPP\_CPU\_CU\_AFFINITY 结合使用，还有其他支持 CPU 性能调优的环境变量：
 
 \begin{itemize}
 	\item DPCPP\_CPU\_NUM\_CUS = [n]，设置用于Kernel执行的线程数。 它的默认值是系统中硬件线程的数量。
 
-	\item DPCPP\_CPU\_PLACES = [ 套接字| numa\_domains | numa\_domains | 核心| ]，
+	\item DPCPP\_CPU\_PLACES = [ sockets| numa\_domains | numa\_domains | cores| threads ]，
 	它指定将设置关联性的位置，类似于 OpenMP 5.1 中的 OMP\_PLACES。 默认设置是核心。
 
-	\item DPCPP\_CPU\_SCHEDULE = [ 动态| 亲和力| static ]，指定调度工作组的算法。 它的默认设置是动态的。
+	\item DPCPP\_CPU\_SCHEDULE = [ dynamic| affinity| static ]，指定调度工作组的算法。 
+	它的默认设置是动态的。
+	
+	dynamic：启用auto\_partitioner，它通常会执行足够的分割以平衡工作线程之间的负载。
+
+	affinity：启用affinity\_partitioner，它可以提高缓存亲和力，并在将子范围映射到工作线程时使用比例分割。
+
+	static：启用 static\_partitioner，它尽可能均匀地在工作线程之间分配迭代。
 \end{itemize}
 
-动态：启用auto\_partitioner，它通常会执行足够的分割以平衡工作线程之间的负载。
-
-affinity：启用affinity\_partitioner，它可以提高缓存亲和力，并在将子范围映射到工作线程时使用比例分割。
-
-static：启用 static\_partitioner，它尽可能均匀地在工作线程之间分配迭代。
 
 当使用 Intel 的 OpenCL CPU 运行时在 CPU 上运行时，工作组调度由线程构建块 (TBB) 库处理。 
 使用 DPCPP\_CPU\_SCHEDULE 确定使用哪个 TBB 分区程序。 
@@ -215,7 +251,9 @@ static：启用 static\_partitioner，它尽可能均匀地在工作线程之间
 STREAM Triad 代码如图 16-1 所示，在没有线程关联设置的情况下，一开始性能较低。 
 通过控制亲和力设置并通过环境变量使用软件线程的静态调度（Linux 的导出如下所示），性能得到了提高：
 
-导出 DPCPP\_CPU\_PLACES=numa\_domains 导出 DPCPP\_CPU\_CU\_AFFINITY=关闭
+export DPCPP\_CPU\_PLACES=numa\_domains 
+
+export DPCPP\_CPU\_CU\_AFFINITY=close
 
 通过使用 numa\_domains 作为亲和性的场所设置，TBB 任务区域绑定到 NUMA 节点或套接字，
 并且工作均匀分布在任务区域之间。 
@@ -231,11 +269,17 @@ STREAM Triad 代码如图 16-1 所示，在没有线程关联设置的情况下�
 我们可以通过并行化初始化循环来控制跨套接字的首次触摸效果，
 从而在 STREAM Triad Kernel上实现更高的性能，如图 16-10 所示。
 
+{\color{red} STREAM Triad 并行初始化Kernel，用于控制首次触摸效果}
+
 在初始化代码中利用并行性可以提高Kernel在 CPU 上运行时的性能。 
 在本例中，我们在 Intel Xeon 处理器系统上实现了约 2 倍的性能提升。
 
 本章最近的部分表明，通过利用线程级并行性，我们可以有效地利用 CPU Kernel和线程。 
 然而，我们还需要利用 CPU 核心硬件中的 SIMD 矢量级并行性来实现峰值性能。
+
+\begin{remark}
+	SYCL 并行Kernel受益于跨Kernel和硬件线程的线程级并行性！
+\end{remark}
 
 \subsection{CPU 上的 SIMD 矢量化}
 虽然编写良好且没有跨工作项依赖性的 SYCL Kernel可以在 CPU 上有效地并行运行，
@@ -247,35 +291,41 @@ STREAM Triad 代码如图 16-1 所示，在没有线程关联设置的情况下�
 并且 将它们作为一个组执行，这可以自然地映射到硬件的 SIMD 指令集上。 
 具体地，可以通过单个指令同时处理多个数据元素。
 
+{\color{red} SIMD 执行指令流}
+
 单个指令同时处理的数据元素的数量有时称为指令或执行该指令的处理器的向量长度（或 SIMD 宽度）。 
 在图 16-11 中，我们的指令流以四路 SIMD 执行方式运行。
 
 CPU 处理器并不是唯一实现 SIMD 指令集的处理器。 GPU 等其他处理器实现 SIMD 指令以提高处理大量数据时的效率。 
 与其他处理器类型相比，Intel Xeon CPU 处理器的一个关键区别在于具有三个固定大小的 SIMD 寄存器宽度（
 128 位 XMM、256 位 YMM 和 512 位 ZMM），而不是可变长度的 SIMD 宽度。 
-当我们使用子组或向量类型编写具有 SIMD 并行性的 SYCL 代码时（请参阅第 11 章），
+当我们使用Sub-Groups或向量类型编写具有 SIMD 并行性的 SYCL 代码时（请参阅第 11 章），
 我们需要注意硬件中 SIMD 宽度和 SIMD 向量寄存器的数量。
 
 \subsubsection{确保SIMD执行合法性}
 从语义上讲，SYCL执行模型确保SIMD执行可以应用于任何Kernel，
-并且每个工作组（即子组）中的一组工作项可以使用SIMD指令同时执行。 
+并且每个工作组（即Sub-Groups）中的一组工作项可以使用SIMD指令同时执行。 
 某些实现可能会选择使用 SIMD 指令在Kernel中执行循环，但当且仅当保留所有原始数据依赖性，
-或者编译器基于私有化和归约语义解决数据依赖性时，这才是可能的。 这种实现可能会报告子组大小为 1。
+或者编译器基于私有化和归约语义解决数据依赖性时，这才是可能的。 这种实现可能会报告Sub-Groups大小为 1。
 
 单个 SYCL Kernel执行可以从处理单个工作项转换为使用工作组内的 SIMD 指令处理一组工作项。 
 在 ND 范围模型下，编译器矢量化器会选择增长最快（单位步长）的维度来生成 SIMD 代码。 
-本质上，要在给定 ND 范围的情况下启用矢量化，同一子组中的任何两个工作项之间不应存在跨工作项依赖关系，
-或者编译器需要在同一子组中保留跨工作项前向依赖关系。 子组。
+本质上，要在给定 ND 范围的情况下启用矢量化，同一Sub-Groups中的任何两个工作项之间不应存在跨工作项依赖关系，
+或者编译器需要在同一Sub-Groups中保留跨工作项前向依赖关系。 Sub-Groups。
+
+{\color{red} 使用Sub-Groups对具有前向依赖关系的循环进行矢量化}
 
 当工作项的Kernel执行映射到 CPU 上的线程时，细粒度同步的成本很高，而且线程上下文切换开销也很高。 
 因此，在为CPU编写SYCLKernel时，消除工作组内工作项之间的依赖性是一项重要的性能优化。 
-另一种有效的方法是将这种依赖性限制在子组内的工作项，如图 16-12 中的先读后写依赖性所示。 
-如果子组在SIMD执行模型下执行，则Kernel中的子组屏障可以被编译器视为noop，并且在运行时不会产生真正的同步成本。
+另一种有效的方法是将这种依赖性限制在Sub-Groups内的工作项，如图 16-12 中的先读后写依赖性所示。 
+如果Sub-Groups在SIMD执行模型下执行，则Kernel中的Sub-Groups屏障可以被编译器视为noop，并且在运行时不会产生真正的同步成本。
+
+{\color{red} 具有前向依赖关系的循环的 SIMD 矢量化}
 
 Kernel被向量化（以向量长度为8为例），其SIMD执行如图16-13所示。 
-工作组的组大小为 (1, 8)，Kernel内部的循环迭代分布在这些子组工作项上，并以八路 SIMD 并行方式执行。
+工作组的组大小为 (1, 8)，Kernel内部的循环迭代分布在这些Sub-Groups工作项上，并以八路 SIMD 并行方式执行。
 
-在此示例中，如果Kernel中的循环主导性能，则允许跨子组进行 SIMD 矢量化将带来显着的性能改进。
+在此示例中，如果Kernel中的循环主导性能，则允许跨Sub-Groups进行 SIMD 矢量化将带来显着的性能改进。
 
 使用并行处理数据元素的 SIMD 指令是让Kernel性能超越 CPU 核心和硬件线程数量的一种方法。
 
@@ -303,6 +353,8 @@ SIMD 掩码是一组值为 1 或 0 的位，由Kernel中的条件语句生成。
 在选择 ND 范围工作组大小时应小心，以通过最小化屏蔽成本来最大化 SIMD 效率。 
 当工作组大小不能被处理器的 SIMD 宽度整除时，部分工作组可能会在Kernel屏蔽的情况下执行。
 
+{\color{red} 用于Kernel中屏蔽的三个屏蔽代码生成}
+
 图 16-14 显示了使用合并屏蔽如何创建对目标寄存器的依赖：
 
 \begin{itemize}
@@ -323,18 +375,26 @@ SIMD 掩码是一组值为 1 或 0 的位，由Kernel中的条件语句生成。
 \subsubsection{避免结构数组以提高 SIMD 效率}
 AOS（结构数组）结构会导致聚集和分散，这既会影响 SIMD 效率，也会为内存访问带来额外的带宽和延迟。 
 硬件收集-分散机制的存在并不能消除这种转换的需要——收集-分散访问通常需要比连续负载高得多的带宽和延迟。 
-给定 struct {float x; 的 AOS 数据布局； 浮动y； 浮点z； float w;} a[4]，
+给定 struct {float x; float y; float z; float w;} a[4]
 考虑一个对其进行操作的Kernel，如图 16-15 所示。
+
+{\color{red} Kernel中的SIMD gather}
 
 当编译器沿着一组工作项对Kernel进行矢量化时，由于需要非单位跨度内存访问，它会导致 SIMD 收集指令生成。 
 例如，a[0].x、a[1].x、a[2].x 和 a[3].x 的步长是 4，而不是更有效的单位步长 1。
+
+{\color{blue} PIC}
 
 在Kernel中，我们通常可以通过消除内存聚集-分散操作来实现更高的 SIMD 效率。 
 某些代码受益于数据布局更改，该更改将以结构数组 (AOS) 表示形式编写的数据结构转换为数组结构 (SOA) 表示形式，
 即为每个结构字段使用单独的数组以保留内存访问 执行 SIMD 矢量化时是连续的。 
 例如，考虑 struct {float x[4]; 的 SOA 数据布局； 浮动y[4]； 浮动z[4]； 浮动 w[4];} a; 如图所示：
 
+{\color{blue} PIC}
+
 Kernel可以使用单位步长（连续）向量加载和存储来操作数据，如图 16-16 所示，即使是向量化时也是如此！
+
+{\color{red} Kernel中的 SIMD 单位步幅向量负载}
 
 SOA 数据布局有助于防止跨数组元素访问结构的一个字段时发生聚集，
 并帮助编译器在与工作项关联的连续数组元素上对Kernel进行矢量化。 
@@ -363,6 +423,8 @@ int id = get\_global\_id(0); a[id] = b[id] + c[id];
 语言。 具体来说，某些转换的溢出是未定义的行为，这允许编译器假设此类情况永远不会发生并更积极地进行优化。 
 图 16-17 为那些想要了解细节的人展示了一些示例。
 
+{\color{red} 整数类型的value wrapper around}
+
 SIMD 聚集/分散指令比 SIMD 单位步长向量加载/存储操作慢。 
 为了实现最佳的 SIMD 效率，无论使用哪种编程语言，避免聚集/分散对于应用程序都是至关重要的。
 
@@ -389,11 +451,24 @@ vec load、store 和 swizzle 函数直接对向量变量执行操作，
 正如第 11 章中所讨论的，这种对 vec 的解释是有效的，
 但是，我们应该预期该功能最终会被弃用，而支持更明确的向量类型（例如，std::simd）。
 
+{\color{red} 在single\_taskKernel中使用向量类型和 swizzle 操作}
+
 在图16-18所示的示例中，在单任务执行下，声明了一个具有三个数据元素的向量。 
 使用 old\_v.abgr() 执行 swizzle 操作。 如果 CPU 为某些 swizzle 操作提供 SIMD 硬件指令，
 我们可以通过在应用程序中使用 swizzle 操作来实现一些性能优势。
 
-\subsection{概括}
+\begin{remark}[SIMD 矢量化指南]
+CPU 处理器实现具有不同 SIMD 宽度的 SIMD 指令集。
+在许多情况下，这是一个实现细节，对于在 CPU 上执行Kernel的应用程序是透明的，
+因为编译器可以确定一组有效的数据元素，以特定的 SIMD 大小进行处理，而不是要求我们显式使用 SIMD 指令。
+Sub-Groups可用于更直接地表示数据元素分组应在Kernel中执行 SIMD 的情况。
+
+考虑到计算的复杂性，选择最适合矢量化的代码和数据布局最终可能会带来更高的性能。
+在选择数据结构时，请尝试选择数据布局、对齐方式和数据宽度，
+以便最常执行的计算能够以具有最大并行度的 SIMD 友好方式访问内存，如本章所述。
+\end{remark}
+
+\subsection{总结}
 为了充分利用 CPU 上的线程级并行性和 SIMD 矢量级并行性，我们需要牢记以下目标：
 
 \begin{itemize}
