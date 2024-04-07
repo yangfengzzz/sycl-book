@@ -22,9 +22,11 @@
 图 9-1 显示了划分为Work-Groups的 ND 范围，其中每个Work-Groups由不同的颜色表示。 
 每个Work-Groups中的Work-Items可以安全地与共享相同颜色的其他Work-Items进行通信。
 
-无法保证不同Work-Groups中的Work-Items会同时执行，因此具有一种颜色的Work-Items无法与具有不同颜色的Work-Items可靠地通信。 
+无法保证不同Work-Groups中的Work-Items会同时执行，
+因此具有一种颜色的Work-Items无法与具有不同颜色的Work-Items可靠地通信。 
 如果一个Work-Items尝试与当前未执行的另一Work-Items通信，则Kernel可能会死锁。 
-由于我们希望Kernel能够完成执行，因此我们必须确保当一个Work-Items与另一Work-Items通信时，它们位于同一个Work-Groups中。
+由于我们希望Kernel能够完成执行，因此我们必须确保当一个Work-Items与另一Work-Items通信时，
+它们位于同一个Work-Groups中。
 
 \subsection{高效通讯的基石}
 本节描述支持组中Work-Items之间高效通信的构建块。 
@@ -39,13 +41,19 @@
 
 其次，Barrier函数同步每个Work-Items如何查看内存状态。 
 这种类型的同步操作称为强制内存一致性或隔离内存（更多详细信息请参阅第 19 章）。 
-内存一致性至少与同步执行一样重要，因为它确保在Barrier之前执行的内存操作的结果对于Barrier之后的其他Work-Items是可见的。 
+内存一致性至少与同步执行一样重要，
+因为它确保在Barrier之前执行的内存操作的结果对于Barrier之后的其他Work-Items是可见的。 
 如果没有内存一致性，一个Work-Items中的操作就像森林中的一棵树倒下一样，其他Work-Items可能会也可能听不到声音！
 
-{\color{red} 组中的四个Work-Items在 Barrier 函数处同步}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.2.png}
+	\caption{\textit{组中的四个Work-Items在 Barrier 函数处同步 }}
+\end{figure}
 
 图 9-2 显示了一组中在Barrier函数处同步的四个Work-Items。 
-尽管每个Work-Items的执行时间可能不同，但在所有Work-Items都执行Barrier之前，没有任何Work-Items可以执行越过Barrier。 
+尽管每个Work-Items的执行时间可能不同，但在所有Work-Items都执行Barrier之前，
+没有任何Work-Items可以执行越过Barrier。 
 执行Barrier函数后，所有Work-Items都具有一致的内存视图。
 
 \begin{remark}[为什么默认情况下内存不一致？]
@@ -72,7 +80,11 @@ Work-Groups Barrier功能足以协调Work-Groups中Work-Items之间的通信，�
 为了简化Kernel开发并加速Work-Groups中Work-Items之间的通信，SYCL定义了一个特殊的本地内存空间，
 专门用于Work-Groups中Work-Items之间的通信。
 
-{\color{red} 每个Work-Groups可以访问所有全局内存，但只能访问自己的本地内存}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.3.png}
+	\caption{\textit{每个Work-Groups可以访问所有全局内存，但只能访问自己的本地内存 }}
+\end{figure}
 
 图 9-3 显示了两个Work-Groups。 两个Work-Groups都可以访问USM和全局内存空间中的Buffer。 
 每个Work-Groups可以访问自己的本地内存空间中的变量，但不能访问另一个Work-Groups本地内存中的变量。
@@ -102,13 +114,15 @@ Work-Groups Barrier功能足以协调Work-Groups中Work-Items之间的通信，�
 请记住，Work-Items之间的通信需要Work-Items分组的概念，因此这些概念只能针对 ND 范围Kernel来表达，
 并且不包含在基本数据并行Kernel的执行模型中。
 
-本章将通过介绍执行矩阵乘法的Work-Groups中的Work-Items之间的通信，建立在第 4 章中介绍的朴素矩阵乘法Kernel示例的基础上。 
+本章将通过介绍执行矩阵乘法的Work-Groups中的Work-Items之间的通信，
+建立在第 4 章中介绍的朴素矩阵乘法Kernel示例的基础上。 
 在许多设备上（但不一定是所有设备！）通过本地内存进行通信将提高矩阵乘法Kernel的性能。
 
 \begin{remark}[关于矩阵乘法的说明]
 在本书中，矩阵乘法Kernel用于演示Kernel的变化如何影响性能。尽管使用本章中描述的技术可以在许多设备上提高矩阵乘法性能，
 但矩阵乘法是一项非常重要且常见的操作，因此许多供应商已经实现了矩阵乘法的高度调整版本。
-供应商投入大量时间和精力为特定设备实现和验证功能，在某些情况下，可能会使用在标准并行Kernel中难以或不可能使用的功能或技术。
+供应商投入大量时间和精力为特定设备实现和验证功能，在某些情况下，
+可能会使用在标准并行Kernel中难以或不可能使用的功能或技术。
 \end{remark}
 
 \begin{remark}[使用供应商提供的库！]
@@ -116,7 +130,11 @@ Work-Groups Barrier功能足以协调Work-Groups中Work-Items之间的通信，�
 对于矩阵乘法，可以将oneMKL视为英特尔工具包的一部分，以提供适合SYCL程序员的C++解决方案。
 \end{remark}
 
-{\color{red} 第 4 章中的朴素矩阵乘法Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.4.png}
+	\caption{\textit{第 4 章中的朴素矩阵乘法Kernel }}
+\end{figure}
 
 图 9-4 显示了我们将从中开始的朴素矩阵乘法Kernel，类似于第 4 章中的矩阵乘法Kernel。
 对于该Kernel以及本章中的所有矩阵乘法Kernel，T 是一个模板类型，指示类型 存储在矩阵中的数据的数量，
@@ -130,7 +148,11 @@ Work-Groups Barrier功能足以协调Work-Groups中Work-Items之间的通信，�
 	对于许多算法，将本地内存视为显式缓存会很有帮助。
 \end{remark}
 
-{\color{red} 矩阵乘法到Work-Groups和Work-Items的映射}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.5.png}
+	\caption{\textit{矩阵乘法到Work-Groups和Work-Items的映射 }}
+\end{figure}
 
 图 9-5 是第 4 章的修改图，显示了由单行组成的Work-Groups，这使得使用本地内存的算法更容易理解。 
 观察到，对于结果矩阵的一行中的元素，每个结果元素都是使用来自输入矩阵之一的唯一数据列计算的（以蓝色和橙色显示）。 
@@ -140,11 +162,16 @@ Work-Groups Barrier功能足以协调Work-Groups中Work-Items之间的通信，�
 
 因为我们想要乘以可能非常大的矩阵，并且Work-Groups本地内存可能是有限的资源，
 所以我们修改后的Kernel将处理每个矩阵的子部分，我们将其称为矩阵图块。 
-对于每个图块，我们修改后的Kernel会将图块的数据加载到本地内存中，同步组中的Work-Items，然后从本地内存而不是全局内存加载数据。 
+对于每个图块，我们修改后的Kernel会将图块的数据加载到本地内存中，
+同步组中的Work-Items，然后从本地内存而不是全局内存加载数据。 
 第一个图块访问的数据如图 9-6 所示。
 
-{\color{red} 处理第一个图块：绿色输入数据（X的左边）被重用并从本地内存中读取，
-蓝色和橙色的输入数据（X的右边）从全局内存中读取}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.6.png}
+	\caption{\textit{处理第一个图块：绿色输入数据（X的左边）被重用并从本地内存中读取，
+蓝色和橙色的输入数据（X的右边）从全局内存中读取 }}
+\end{figure}
 
 在我们的Kernel中，我们选择了与Work-Groups大小相等的图块大小。 
 这不是必需的，但因为它简化了本地内存的传入或传出，所以选择Work-Groups大小的倍数的图块大小是常见且方便的。
@@ -161,7 +188,11 @@ Work-Groups Barrier功能足以协调Work-Groups中Work-Items之间的通信，�
 本地访问器不是从Buffer对象创建的。 相反，本地访问器是通过指定类型和描述该类型元素数量的范围来创建的。 
 与其他访问器一样，本地访问器可以是一维、二维或三维的。 图 9-7 演示了如何声明本地访问器并在Kernel中使用它们。
 
-{\color{red} 声明和使用本地访问器}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.7.png}
+	\caption{\textit{声明和使用本地访问器取 }}
+\end{figure}
 
 请记住，本地内存在每个Work-Groups开始时未初始化，并且在每个Work-Groups完成后不会保留。 
 这意味着本地访问器必须始终是 read\_write，否则Kernel将无法分配本地内存的内容或查看分配的结果。 
@@ -178,7 +209,8 @@ group\_barrier 函数接受一个附加的可选参数来描述Barrier执行的�
 当没有附加参数传递给 group\_barrier 函数时，Barrier函数将根据传入的组确定默认范围。 
 默认范围通常是正确的，因此很少需要显式范围，但如果某些算法需要，可以扩大内存范围。
 
-请注意，显式作用域仅影响由Barrier执行的内存操作，并且在Barrier处同步执行的Work-Items集完全由传递给Barrier的组对象确定。 
+请注意，显式作用域仅影响由Barrier执行的内存操作，
+并且在Barrier处同步执行的Work-Items集完全由传递给Barrier的组对象确定。 
 我们无法通过将不同的内存范围传递给Barrier来同步更多或更少的Work-Items，
 但我们可以通过将不同的组对象传递给Barrier来同步一组不同的Work-Items。
 
@@ -188,9 +220,14 @@ group\_barrier 函数接受一个附加的可选参数来描述Barrier执行的�
 我们可以实现矩阵乘法的 ND 范围Kernel版本，它协调Work-Groups中Work-Items之间的通信，以减少全局流量 内存。 
 完整的示例如图 9-8 所示。
 
-{\color{red} 用 ND 范围parallel\_for和Work-Groups本地存储器表达平铺矩阵乘法Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.8.png}
+	\caption{\textit{用 ND 范围parallel\_for和Work-Groups本地存储器表达平铺矩阵乘法Kernel }}
+\end{figure}
 
-该Kernel中的主循环可以被认为是两个不同的阶段：在第一阶段，Work-Groups中的Work-Items协作将共享数据从A矩阵加载到Work-Groups本地内存中； 
+该Kernel中的主循环可以被认为是两个不同的阶段：
+在第一阶段，Work-Groups中的Work-Items协作将共享数据从A矩阵加载到Work-Groups本地内存中； 
 在第二个中，Work-Items使用共享数据执行自己的计算。 
 为了确保所有Work-Items在进入第二阶段之前都已完成第一阶段，这两个阶段通过调用 group\_barrier 来分隔，
 以同步Work-Groups中的所有Work-Items并提供内存栅栏。 
@@ -215,7 +252,12 @@ Sub-Groups还需要Work-Items分组的概念，因此Sub-Groups也需要 ND 范�
 并且不包含在基本数据并行Kernel的执行模型中。
 
 \subsubsection{通过Sub-Groups Barrier进行同步}
-{\color{red} 查询和使用 sub\_group 类}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.9.png}
+	\caption{\textit{查询和使用 sub\_group 类 }}
+\end{figure}
 
 正如Work-Groups中的Work-Items可以如何使用Work-Groups Barrier来同步一样，
 Sub-Groups中的Work-Items可以使用Sub-Groups Barrier来同步。 
@@ -223,12 +265,14 @@ Sub-Groups中的Work-Items可以使用Sub-Groups Barrier来同步。
 但传递代表Sub-Groups而不是Work-Groups的组对象，如图 9-9 所示。 
 与Work-Groups对象一样，可以从 ND 范围Kernel的 nd\_item 类查询表示Sub-Groups的组对象，但不能从基本数据并行项查询。
 
-与Work-Groups Barrier一样，Sub-Groups Barrier可以接受可选参数来扩大与Sub-Groups Barrier相关的任何内存操作的范围，
+与Work-Groups Barrier一样，
+Sub-Groups Barrier可以接受可选参数来扩大与Sub-Groups Barrier相关的任何内存操作的范围，
 但这并不常见，在大多数情况下我们可以简单地使用默认内存范围。
 
 \subsubsection{在Sub-Groups内交换数据}
 与Work-Groups不同，Sub-Groups没有用于交换数据的专用存储空间。 
-相反，Sub-Groups中的Work-Items可以通过Work-Groups本地存储器、通过全局存储器或更常见地通过使用Sub-Groups集体功能来交换数据。
+相反，Sub-Groups中的Work-Items可以通过Work-Groups本地存储器、
+通过全局存储器或更常见地通过使用Sub-Groups集体功能来交换数据。
 
 如前所述，集体函数是描述由一组Work-Items而不是单个Work-Items执行的操作的函数。 
 由于Barrier同步功能是由一组Work-Items执行的操作，因此它是集体功能的一个示例。
@@ -237,14 +281,22 @@ Sub-Groups中的Work-Items可以使用Sub-Groups Barrier来同步。
 我们将在本章后面详细描述许多集体函数的语义，但现在我们重点关注 group\_broadcast 集体函数，
 我们将使用它来实现使用Sub-Groups的矩阵乘法。
 
-{\color{red} 广播函数}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.10.png}
+	\caption{\textit{广播函数 }}
+\end{figure}
 
 group\_broadcast 集体函数从组中的一个Work-Items获取一个值，并将其传递给组中的所有其他Work-Items。 
 图 9-10 显示了一个示例。 
 请注意，广播函数的语义要求标识组中要通信的值的 local\_id 对于组中的所有Work-Items必须相同，
 以确保广播函数的结果对于所有Work-Items也相同 在组中。
 
-{\color{red} 矩阵乘法Kernel包括广播操作}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.11.png}
+	\caption{\textit{矩阵乘法Kernel包括广播操作 }}
+\end{figure}
 
 如果我们查看本地内存矩阵乘法Kernel的最内层循环（如图 9-11 所示），
 我们可以看到对矩阵图块的访问是广播操作，因为组中的每个Work-Items都读取相同的值 矩阵瓦片的。
@@ -253,7 +305,11 @@ group\_broadcast 集体函数从组中的一个Work-Items获取一个值，并�
 在许多设备上，使用Work-Groups本地内存和Barrier，Sub-Groups广播比Work-Groups广播更快。
 
 \subsubsection{完整Sub-Groups ND 范围Kernel示例}
-{\color{red} 用ND范围parallel\_for和Sub-Groups集体函数表示的平铺矩阵乘法核}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.12.png}
+	\caption{\textit{用ND范围parallel\_for和Sub-Groups集体函数表示的平铺矩阵乘法核 }}
+\end{figure}
 
 图 9-12 是使用Sub-Groups实现矩阵乘法的完整示例。 
 请注意，该Kernel不需要Work-Groups本地内存或显式同步，
@@ -283,7 +339,11 @@ any\_of\_group、all\_of\_group 和 none\_of\_group 函数（以下称为“投�
 如果组中的所有Work-Items的条件为 false，则 none\_of\_group 返回 true。 
 图 9-13 显示了示例输入的这两个函数的比较。
 
-{\color{red} any\_of\_group、all\_of\_group和none\_of\_group功能的比较}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.13.png}
+	\caption{\textit{any\_of\_group、all\_of\_group和none\_of\_group功能的比较 }}
+\end{figure}
 
 SYCL 2020 还支持这些函数的另一种变体，其中组中的Work-Items协作评估一系列数据，
 例如标准 C++ all\_of、any\_of 和 none\_of 算法。 
@@ -298,7 +358,11 @@ Sub-Groups最有用的功能之一是能够在各个Work-Items之间直接通信
 在许多情况下，例如Sub-Groups矩阵乘法Kernel，这些洗牌操作使我们能够从Kernel中删除Work-Groups本地内存使用，
 并避免不必要的重复访问全局内存。 这些shuffle 函数有多种类型可供选择。
 
-{\color{red} 使用泛型select\_from\_group根据预先计算的索引对值进行排序}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.14.png}
+	\caption{\textit{使用泛型select\_from\_group根据预先计算的索引对值进行排序 }}
+\end{figure}
 
 最通用的 shuffle 函数称为 select\_from\_group，如图 9-14 所示，
 它允许Sub-Groups中任意一对Work-Items之间进行任意通信。 
@@ -312,15 +376,27 @@ Sub-Groups最有用的功能之一是能够在各个Work-Items之间直接通信
 当已知Sub-Groups中所有Work-Items的洗牌索引相同时，使用 group\_broadcast 
 而不是 select\_from\_group 可为编译器提供附加信息，并可能提高某些实现的性能。
 
-{\color{red} 使用 shift\_group\_left 将Sub-Groups的 x 值按 5 个项目移动}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.15.png}
+	\caption{\textit{使用 shift\_group\_left 将Sub-Groups的 x 值按 5 个项目移动 }}
+\end{figure}
 
 shift\_group\_right 和 shift\_group\_left 函数有效地将Sub-Groups的内容沿给定方向移动固定数量的元素，
 如图 9-15 所示。 请注意，返回到Sub-Groups中最后五个Work-Items的值未定义，并在图 9-15 中显示为空白。 
 移位对于并行化具有循环携带依赖性的循环或实现常见算法（例如独占或包含扫描）非常有用。
 
-{\color{red} 使用permute\_group\_by\_xor交换相邻的 x 对}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.16.png}
+	\caption{\textit{使用permute\_group\_by\_xor交换相邻的 x 对 }}
+\end{figure}
 
-{\color{red} 使用permute\_group\_by\_xor反转 x 的值}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F9.17.png}
+	\caption{\textit{使用permute\_group\_by\_xor反转 x 的值 }}
+\end{figure}
 
 permute\_group\_by\_xor 函数交换两个Work-Items的值，
 由应用于Work-Items的Sub-Groups本地 ID 和固定常量的 XOR 运算的结果指定。 

@@ -81,12 +81,20 @@ SYCL 规范定义了一个设备类，该类封装了可以执行Kernel的设备
 它考虑在一系列设备中的一个相当精确的设备模型上执行。 介于两者之间的列举方法兼具灵活性和规范性。 
 图 12-1、图 12-2 和图 12-4 帮助说明我们如何选择设备。
 
-{\color{red} 默认情况下已为我们分配的设备}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.1.png}
+	\caption{\textit{默认情况下已为我们分配的设备 }}
+\end{figure}
 
 图 12-1 显示，即使我们允许实现为我们选择默认设备（第 2 章中的方法\#1），
 我们仍然可以查询有关所选设备的信息。
 
-{\color{red} 如果可能，请使用 try-catch 选择 GPU 设备，如果没有，请使用默认设备}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.2.png}
+	\caption{\textit{如果可能，请使用 try-catch 选择 GPU 设备，如果没有，请使用默认设备 }}
+\end{figure}
 
 图 12-2 显示了我们如何尝试使用特定设备（在本例中为 GPU）设置队列，但如果没有可用的 GPU，则显式回退到默认设备。 
 这让我们能够在一定程度上控制设备的选择，只要有可用的 GPU，我们就会优先选择 GPU。 
@@ -102,7 +110,11 @@ SYCL 规范定义了一个设备类，该类封装了可以执行Kernel的设备
 SYCL 依赖于此，就像操作系统需要驱动程序来访问硬件一样，仅将硬件安装在计算机中是不够的。
 
 \subsubsection{Aspect}
-{\color{red} SYCL 标准定义的Aspect（实现可以添加更多）}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.3.png}
+	\caption{\textit{SYCL 标准定义的Aspect（实现可以添加更多） }}
+\end{figure}
 
 SYCL 标准有一个设备Aspect的小列表，可用于了解设备的功能、控制我们选择使用哪些设备以及控制我们向设备提交哪些Kernel。 
 在本章的最后，我们将讨论“Kernel特化”和Kernel模板化。 现在，我们将列举这些Aspect以及如何在设备查询和选择中使用它们。 
@@ -113,7 +125,11 @@ Aspect是布尔值——设备要么有Aspect，要么没有Aspect。
 因此 它们可能不受所有设备的支持 - 对这些设备的测试对于强大的应用程序尤其重要。
 
 \subsubsection{自定义设备选择器}
-{\color{red} 自定义设备选择器 — 我们的首选解决方案}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.4.png}
+	\caption{\textit{自定义设备选择器 — 我们的首选解决方案 }}
+\end{figure}
 
 图 12-4 使用自定义设备选择器。 自定义设备选择器首先在第 2 章中作为 Method\#5 讨论，
 用于选择代码运行的位置（图 2-16）。 自定义设备选择器评估应用程序可用的每个设备。 
@@ -145,12 +161,24 @@ Aspect是布尔值——设备要么有Aspect，要么没有Aspect。
 	在编写自己的“列出所有可用的 SYCl 设备”程序之前，您可能希望查看您的系统是否支持 sycl-ls 等实用程序。
 \end{remark}
 
-{\color{red} 设备查询机制的简单使用：curious.cpp}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.5.png}
+	\caption{\textit{设备查询机制的简单使用：curious.cpp }}
+\end{figure}
 
-{\color{red} curious.cpp的输出示例}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.6.png}
+	\caption{\textit{curious.cpp的输出示例 }}
+\end{figure}
 
 \subsubsection{更好奇：详细的枚举代码}
-{\color{red} 设备查询机制的更详细使用：verycurious.cpp（显示的子集）}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.7.png}
+	\caption{\textit{设备查询机制的更详细使用：verycurious.cpp（显示的子集） }}
+\end{figure}
 
 我们提供了一个程序，我们将其命名为verycurious.cpp（图12-7），来说明使用get\_info 可以获得的一些详细信息。 
 我们再次发现自己编写这样的代码来帮助开发或调试程序。
@@ -178,7 +206,11 @@ SYCL 规范中标题为“设备信息描述符”的表中描述了此类项目
 \subsection{细节：“正确性”的细节}
 我们将细节分为有关必要条件（正确性）的信息和对调整有用但对正确性不是必需的信息。
 
-{\color{red} 获取可用于塑造Kernel的参数}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.8.png}
+	\caption{\textit{获取可用于塑造Kernel的参数 }}
+\end{figure}
 
 \begin{remark}
 	提交违反必需条件（例如 sub\_group\_sizes）的Kernel将生成运行时错误。
@@ -275,9 +307,17 @@ SYCL 标准在“设备Aspect”部分末尾有一个示例，
 当然，我们可以显式编写特化的Kernel并使用 C++ 模板来提供帮助。 
 我们可以通过使用 SYCL 属性（图 12-9）和Aspect（图 12-3）来通知编译器我们希望Kernel使用特定功能。
 
-{\color{red} 由 SYCL 标准定义的属性（未弃用）}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.9.png}
+	\caption{\textit{由 SYCL 标准定义的属性（未弃用） }}
+\end{figure}
 
-{\color{red} 借助属性显式Kernel特化}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F12.10.png}
+	\caption{\textit{借助属性显式Kernel特化 }}
+\end{figure}
 
 例如，reqd\_work\_group\_size 属性（图 12-9）可用于要求Kernel的特定Work-Groups大小，
 而 device\_has 属性可用于要求Kernel的特定设备Aspect。

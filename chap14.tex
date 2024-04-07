@@ -30,14 +30,22 @@
 我们不讨论与并行类型相关的模式（例如，fork-join、branch-and-bound），
 而是关注一些对于编写数据并行Kernel最有用的算法模式。
 
-{\color{red} 并行模式及其对不同设备类型的亲和力}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.1.png}
+	\caption{\textit{并行模式及其对不同设备类型的亲和力 }}
+\end{figure}
 
 我们全心全意地相信，理解并行模式的这个子集对于成为一名有效的 SYCL 程序员至关重要。 
 图 14-1 中的表提供了不同模式的高级概述，
 包括它们的主要用例、关键属性以及它们的属性如何影响它们对不同硬件设备的亲和力。
 
 \subsubsection{映射 Map}
-{\color{red} Map 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.2.png}
+	\caption{\textit{Map 模式 }}
+\end{figure}
 
 映射模式是所有并行模式中最简单的，具有函数式编程语言经验的读者会立即熟悉。 
 如图 14-2 所示，范围的每个输入元素通过应用某种函数独立地映射到输出。 
@@ -51,7 +59,11 @@
 但鼓励我们忽略可能显着提高性能的优化（例如，提高数据重用、融合Kernel）。
 
 \subsubsection{模版 Stencil}
-{\color{red} Stencil 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.3.png}
+	\caption{\textit{Stencil 模式 }}
+\end{figure}
 
 模板模式与映射模式密切相关。 如图 14-3 所示，将一个函数应用于一个输入和由模板描述的一组相邻输入以产生单个输出。 
 模板模式经常出现在许多领域，包括科学/工程应用（例如，有限差分代码）和计算机视觉/机器学习应用（例如，图像卷积）。
@@ -77,7 +89,11 @@
 归约是一种常见的并行模式，它使用通常是关联和交换的运算符（例如加法）来组合部分结果。 
 最常见的归约示例是计算总和（例如，在计算点积时）或计算最小值/最大值（例如，使用最大速度来设置时间步长）。
 
-{\color{red} Reduction 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.4.png}
+	\caption{\textit{Reduction 模式 }}
+\end{figure}
 
 图 14-4 显示了通过树归约实现的归约模式，这是一种流行的实现，需要对一系列 N 个输入元素进行 log2 (N) 组合操作。 
 尽管树归约很常见，但其他实现也是可能的 - 一般来说，我们不应该假设归约按特定顺序组合值。
@@ -103,7 +119,11 @@
 虽然扫描确实比其他模式具有更少的并行机会（因此可扩展性可能较差），
 但图 14-5 表明可以使用对相同数据的多次扫描来实现并行扫描。
 
-{\color{red} Scan 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.5.png}
+	\caption{\textit{Scan 模式 }}
+\end{figure}
 
 由于扫描操作中并行性的机会有限，因此执行扫描的最佳设备高度依赖于问题大小：较小的问题更适合 CPU，
 因为只有较大的问题才会包含足够的数据并行性来饱和 图形处理器。 
@@ -118,7 +138,11 @@
 
 \paragraph{打包 Pack}
 
-{\color{red} Pack 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.6.png}
+	\caption{\textit{Pack 模式 }}
+\end{figure}
 
 如图 14-6 所示，打包模式根据布尔条件丢弃输入范围的元素，将未丢弃的元素打包到输出范围的连续位置。 
 该布尔条件可以是预先计算的掩码，也可以通过对每个输入元素应用某些函数来在线计算。
@@ -129,7 +153,11 @@
 
 \paragraph{拆包 Unpack}
 
-{\color{red} Unpack 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.7.png}
+	\caption{\textit{Unpack 模式 }}
+\end{figure}
 
 如图 14-7 所示（顾名思义），解包模式与打包模式相反。 
 输入范围的连续元素被解包为输出范围的不连续元素，而其他元素保持不变。 
@@ -145,7 +173,11 @@ SYCL 不需要我们每个人都维护自己的可移植且高性能的归约Ker
 这种抽象简化了约简Kernel的表达，并使约简的执行变得明确，
 允许实现针对设备、数据类型和约简操作的不同组合在不同的约简算法之间进行选择。
 
-{\color{red} 使用 reduction 库表示为数据并行Kernel的 Reduction}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.8.png}
+	\caption{\textit{使用 reduction 库表示为数据并行Kernel的 Reduction }}
+\end{figure}
 
 图 14-8 中的Kernel显示了使用归约库的示例。 
 请注意，Kernel主体不包含任何对归约的引用 - 我们必须指定的是Kernel包含使用加函Sub-Groups合 sum 变量实例的归约。 
@@ -164,7 +196,11 @@ SYCL 归约库与其他语言中的归约抽象不同的一个重要方式是，
 
 \paragraph{reduction 类}
 
-{\color{red}}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.9.png}
+	\caption{\textit{a }}
+\end{figure}
 
 归约类是我们用来描述Kernel中存在的归约的接口。 构造归约对象的唯一方法是使用图 14-9 中所示的函数之一。 
 请注意，共有三个归约函数系列（用于缓冲区、USM 指针和跨度），每个系列都有两个重载（带和不带恒等变量）。
@@ -185,7 +221,11 @@ SYCL 的未来版本可能会决定重新审视此设计，
 
 \paragraph{reducer 类}
 
-{\color{red} reducer 类的简化定义}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.10.png}
+	\caption{\textit{reducer 类的简化定义 }}
+\end{figure}
 
 reducer 类的实例封装了一个归约变量，公开了一个有限的接口，确保我们无法以实现可能认为不安全的任何方式更新归约变量。 
 reducer 类的简化定义如图 14-10 所示。
@@ -205,7 +245,11 @@ reducer 类的简化定义如图 14-10 所示。
 该对象公开与标量约简关联的约简器相同的 merge() 函数和简写运算符。 
 图 14-11 显示了一个使用数组归约来计算直方图的Kernel的简单示例，其中下标运算符用于仅访问由Work-Items更新的直方图箱。
 
-{\color{red} 使用数组约简计算直方图的示例Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.11.png}
+	\caption{\textit{使用数组约简计算直方图的示例Kernel }}
+\end{figure}
 
 \paragraph{用户定义的归约}
 
@@ -223,11 +267,16 @@ SYCL 实现才能自动确定要使用的正确标识值。
 没有副作用，但这足以支持许多现实生活中的用例。 
 例如，图 14-12 中的代码演示了如何使用用户定义的归约来计算向量中的最小元素及其位置。
 
-{\color{red} 使用用户定义的约简来查找最小值的位置}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.12.png}
+	\caption{\textit{使用用户定义的约简来查找最小值的位置 }}
+\end{figure}
 
 \subsubsection{集体算法}
 SYCL 设备代码中对并行模式的支持由单独的组算法库提供。 
-这些函数利用特定Work-Items组（即Work-Groups或Sub-Groups）的并行性在有限范围内实现常见并行算法，并且可以用作构建其他更复杂算法的构建块。
+这些函数利用特定Work-Items组（即Work-Groups或Sub-Groups）的并行性在有限范围内实现常见并行算法，
+并且可以用作构建其他更复杂算法的构建块。
 
 SYCL 中的组算法的语法基于 C++ 中的算法库的语法，并且适用 C++ 算法的任何限制。 
 然而，有一个关键的区别：STL 的算法是从顺序（主机）代码调用的，并表明库有机会采用并行性，
@@ -238,9 +287,14 @@ SYCL 区分两种不同类型的并行算法。 如果一个算法由一个组�
 但在其他方面与 STL 中的算法行为相同，则该算法以“joint”前缀命名（因为该组的成员“joint”在一起执行该算法） ）。 
 此类算法从内存中读取输入并将结果写入内存，并且只能对给定组中的所有Work-Items可见的内存位置中的数据进行操作。 
 如果算法在反映组本身的隐式范围内运行，
-并且输入和输出存储在Work-Items私有内存中，则算法名称将被修改为包含单词“组”（因为该算法直接对属于该组的数据执行） 团体）。
+并且输入和输出存储在Work-Items私有内存中，
+则算法名称将被修改为包含单词“组”（因为该算法直接对属于该组的数据执行） 团体）。
 
-{\color{red} std::reduce、sycl::joint\_reduce 和 sycl::reduce\_over\_group 的比较}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.13.png}
+	\caption{\textit{std::reduce、sycl::joint\_reduce 和 sycl::reduce\_over\_group 的比较 }}
+\end{figure}
 
 图 14-13 中的代码示例演示了这两种不同类型的算法，
 将 std::reduce 的行为与 sycl::joint\_reduce 和 sycl::reduce\_over\_group 的行为进行了比较。
@@ -254,7 +308,11 @@ SYCL 区分两种不同类型的并行算法。 如果一个算法由一个组�
 例如，sycl::joint\_reduce 要求所有Work-Items的所有参数都相同，
 以确保组中的所有Work-Items对相同的数据进行操作并使用相同的运算符来累积结果。
 
-{\color{red} C++ 算法和 SYCL 组算法之间的映射}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.14.png}
+	\caption{\textit{C++ 算法和 SYCL 组算法之间的映射 }}
+\end{figure}
 
 图14-14中的表显示了STL中可用的并行算法与组算法的关系，以及对可以使用的组类型是否有任何限制。 
 请注意，在某些情况下，组算法只能与Sub-Groups一起使用； 这些情况对应于前面章节中介绍的“shuffle”操作。
@@ -277,27 +335,48 @@ SYCL 区分两种不同类型的并行算法。 如果一个算法由一个组�
 由于其简单性，映射模式可以直接实现为基本并行Kernel。 
 图 14-15 中所示的代码显示了这样的实现，使用映射模式来计算范围内每个输入元素的平方根。
 
-{\color{red} 在数据并行Kernel中实现Map模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.15.png}
+	\caption{\textit{在数据并行Kernel中实现Map模式 }}
+\end{figure}
 
 \subsubsection{模版 Stencil}
 直接将模板实现为具有多维缓冲区的多维基本数据并行Kernel，如图 14-16 所示，非常简单且易于理解。
 
-{\color{red} 在数据并行Kernel中实现 Stencil 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.16.png}
+	\caption{\textit{在数据并行Kernel中实现 Stencil 模式 }}
+\end{figure}
 
 然而，这种模板模式的表达方式非常幼稚，不应期望表现得很好。 
 正如本章前面提到的，众所周知，需要利用局部性（通过空间或时间阻塞）来避免从内存中重复读取相同的数据。 
 图 14-17 显示了使用Work-Groups本地内存的空间阻塞的简单示例。
 
-{\color{red} 使用Work-Groups本地内存在 ND 范围Kernel中实现 Stencil 模式}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.17.png}
+	\caption{\textit{使用Work-Groups本地内存在 ND 范围Kernel中实现 Stencil 模式 }}
+\end{figure}
 
 为给定模板选择最佳优化需要在编译时对块大小、邻域和模板函数本身进行自省，这需要比此处讨论的更复杂的方法。
 
 \subsubsection{归约 Reduction}
-{\color{red} 实现以数据并行Kernel表示的朴素归约}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.18.png}
+	\caption{\textit{实现以数据并行Kernel表示的朴素归约 }}
+\end{figure}
 
-{\color{red} 实现以 ND 范围Kernel表示的朴素归约}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.19.png}
+	\caption{\textit{实现以 ND 范围Kernel表示的朴素归约 }}
+\end{figure}
 
-通过利用提供Work-Items之间的同步和通信功能的语言功能（例如原子操作、Work-Groups和Sub-Groups功能、Sub-Groups“洗牌”），
+通过利用提供Work-Items之间的同步和通信功能的语言功能
+（例如原子操作、Work-Groups和Sub-Groups功能、Sub-Groups“洗牌”），
 可以在 SYCL 中实现归约Kernel。 
 图 14-18 和图 14-19 中的Kernel显示了两种可能的归约实现：
 使用基本的 parallel\_for 和每个Work-Items的原子操作的简单归约，
@@ -316,11 +395,23 @@ SYCL 区分两种不同类型的并行算法。 如果一个算法由一个组�
 由于 SYCL 不提供同步 ND 范围内所有Work-Items的机制，
 因此设备范围扫描的直接实现必须使用多个Kernel，这些Kernel通过全局内存传达部分结果。
 
-{\color{red} 在 ND 范围Kernel中实现全局包容性扫描的第 1 阶段：跨每个Work-Groups进行计算}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.20.png}
+	\caption{\textit{在 ND 范围Kernel中实现全局包容性扫描的第 1 阶段：跨每个Work-Groups进行计算 }}
+\end{figure}
 
-{\color{red} 在 ND 范围Kernel中实现全局包容性扫描的第 2 阶段：扫描每个Work-Groups的结果}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.21.png}
+	\caption{\textit{在 ND 范围Kernel中实现全局包容性扫描的第 2 阶段：扫描每个Work-Groups的结果 }}
+\end{figure}
 
-{\color{red} 第 3 阶段（最终阶段），用于在 ND 范围Kernel中实现全局包容性扫描}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.22.png}
+	\caption{\textit{第 3 阶段（最终阶段），用于在 ND 范围Kernel中实现全局包容性扫描 }}
+\end{figure}
 
 如图 14-20、14-21 和 14-22 所示的代码演示了使用多个Kernel实现的包含扫描。 
 第一个Kernel将输入值分布在Work-Groups之间，
@@ -338,16 +429,26 @@ SYCL 区分两种不同类型的并行算法。 如果一个算法由一个组�
 
 由于 pack 依赖于独占扫描，
 因此实现适用于 ND 范围的所有元素的 pack 也必须通过全局内存并在多个Kernel队列的过程中进行。 
-然而，pack 有一个常见的用例，不需要将操作应用于 ND 范围的所有元素，即仅跨特定Work-Groups或Sub-Groups中的项目应用包。
+然而，pack 有一个常见的用例，不需要将操作应用于 ND 范围的所有元素，
+即仅跨特定Work-Groups或Sub-Groups中的项目应用包。
 
-{\color{red} 在独占扫描之上实现组包操作}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.23.png}
+	\caption{\textit{在独占扫描之上实现组包操作 }}
+\end{figure}
 
-{\color{red} 使用Sub-Groups打包操作构建需要额外后处理的元素列表}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.24.png}
+	\caption{\textit{使用Sub-Groups打包操作构建需要额外后处理的元素列表 }}
+\end{figure}
 
 图 14-23 中的代码片段展示了如何在独占扫描之上实现组包操作。
 
 图 14-24 中的代码演示了如何在Kernel中使用此类打包操作来构建需要一些额外后处理（在未来的Kernel中）的元素列表。 
-所示示例基于分子动力学模拟的真实Kernel：分配给粒子 i 的Sub-Groups中的Work-Items合作识别 i 固定距离内的所有其他粒子，
+所示示例基于分子动力学模拟的真实Kernel：分配给粒子 i 的Sub-Groups中的Work-Items
+合作识别 i 固定距离内的所有其他粒子，
 并且仅识别此“邻居列表”中的粒子 将用于计算作用在每个粒子上的力。
 
 请注意，打包模式永远不会对元素重新排序 - 打包到输出数组中的元素的显示顺序与输入中的顺序相同。 
@@ -357,9 +458,17 @@ pack 的这个属性很重要，
 
 \paragraph{拆包 Unpack}
 
-{\color{red} 在独占扫描之上实现Sub-Groups解压缩操作}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.25.png}
+	\caption{\textit{在独占扫描之上实现Sub-Groups解压缩操作 }}
+\end{figure}
 
-{\color{red} 使用Sub-Groups解包操作来改进具有不同控制流的Kernel的负载平衡}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F14.26.png}
+	\caption{\textit{使用Sub-Groups解包操作来改进具有不同控制流的Kernel的负载平衡 }}
+\end{figure}
 
 与 pack 一样，我们可以使用 scan 来实现 unpack。 图 14-25 显示了如何在独占扫描之上实现Sub-Groups解包操作。
 

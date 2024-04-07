@@ -25,7 +25,11 @@
 支持 SYCL 的 C++ 编译器的设计方式和感觉与我们曾经使用过的任何其他 C++ 编译器一样。 
 值得深入了解内部工作原理，使具有 SYCL 支持的编译器能够为主机（例如 CPU）和设备生成代码。
 
-{\color{red} 平台模型：可以抽象使用，也可以具体使用}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.1.png}
+	\caption{\textit{平台模型：可以抽象使用，也可以具体使用 }}
+\end{figure}
 
 SYCL 使用的平台模型（图 13-1）指定了一个主机，用于协调和控制在设备上执行的计算工作。 
 第 2 章介绍如何向设备分配工作，第 4 章深入介绍如何对设备进行编程。 第 12 章描述了在各个具体级别上使用平台模型。
@@ -93,7 +97,11 @@ SYCL 的单一源性质允许编译的行为和感觉就像常规 C++ 编译一�
 使用即时编译，程序可能会在运行时编译失败（可以使用第 5 章中的机制捕获）。 
 在本章即将到来的“调试”部分中有一些调试技巧，第 5 章详细介绍了如何在运行时捕获这些错误，以避免要求我们的应用程序中止。
 
-{\color{red} 编译过程：JIT和AOT选项}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.2.png}
+	\caption{\textit{编译过程：JIT和AOT选项 }}
+\end{figure}
 
 图 13-2 说明了从源代码到 fat 二进制文件（可执行文件）的编译过程。 
 无论我们选择什么组合，都会组合成一个胖二进制文件。 
@@ -105,7 +113,11 @@ SYCL 的单一源性质允许编译的行为和感觉就像常规 C++ 编译一�
 图 13-3 显示了支持此类需求的捆绑/分拆活动的流程。 
 我们总是可以选择一次编译所有内容，但在开发过程中，中断编译的选项可能非常有用。
 
-{\color{red} 编译过程：卸载 bundler/unbundler}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.3.png}
+	\caption{\textit{编译过程：卸载 bundler/unbundler }}
+\end{figure}
 
 每个支持 SYCL 的 C++ 编译器都有一个具有相同目标的编译模型，但具体的实现细节会有所不同。 
 此处显示的具体图表由 DPC++ 编译器工具链实现者提供。
@@ -254,7 +266,11 @@ SYCL 不需要是程序中并行性的唯一来源。 本书不涉及与其他�
 调试Kernel代码时，首先在 CPU 设备上运行（如第 2 章所述）。 
 第 2 章中的设备选择器代码可以轻松修改为接受运行时选项或编译时选项，以便在调试时将工作重定向到主机设备。
 
-{\color{red} sycl::stream}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.4.png}
+	\caption{\textit{sycl::stream }}
+\end{figure}
 
 当调试Kernel代码时，SYCL 定义了一个可以在Kernel中使用的 C++ 风格的流（图 13-4）。 
 DPC++ 编译器还提供了 C 风格 printf 的实验性实现，它具有有用的功能，但有一些限制。
@@ -300,7 +316,11 @@ error: Kernel compiled with required subgroup size 8, which is unsupported on th
 如果我们的错误可以在编译时而不是 JIT 或运行时看到，那么通常会在编译器的错误消息中找到更有用的信息，
 而不是我们通常从 JIT 或运行时看到的少量错误信息。
 
-{\color{red} DPC++高级调试选项}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.5.png}
+	\caption{\textit{DPC++高级调试选项 }}
+\end{figure}
 
 图 13-5 列出了编译器或运行时支持的两个标志和附加环境变量（在 Windows 和 Linux 上受支持），以帮助进行高级调试。 
 这些是 DPC++ 编译器特定的高级调试选项，用于检查和控制编译模型。 
@@ -351,11 +371,23 @@ info::event\_profiling 中的所有信息参数均在 SYCL 规范标题为“SYC
 	由于开销很小，请仅在开发或优化期间启用队列分析，而对生产环境禁用。
 \end{remark}
 
-{\color{red} 设置为使用队列分析}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.6.png}
+	\caption{\textit{设置为使用队列分析 }}
+\end{figure}
 
-{\color{red} 使用队列分析}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.7.png}
+	\caption{\textit{使用队列分析 }}
+\end{figure}
 
-{\color{red} 队列分析示例的三个示例输出}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.8.png}
+	\caption{\textit{队列分析示例的三个示例输出 }}
+\end{figure}
 
 \subsubsection{跟踪和分析工具接口}
 跟踪和分析工具可以帮助我们了解应用程序中的运行时行为，并且通常可以揭示改进算法的机会。 
@@ -410,7 +442,11 @@ OpenCL 拦截层是一个单独的实用程序，不属于任何特定 OpenCL �
 在尝试使用任务图操作的输出数据之前，我们需要确保已达到代码中执行图的同步点并使数据可供主机使用。 
 Buffer破坏和主机访问器的创建都是导致此同步的操作。
 
-{\color{red} 常见模式：从主机分配创建Buffer}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.9.png}
+	\caption{\textit{常见模式：从主机分配创建Buffer }}
+\end{figure}
 
 图 13-9 显示了我们经常编写的代码的常见模式，其中我们通过关闭定义Buffer的块作用域来销毁Buffer。 
 通过使Buffer超出范围并被销毁，我们可以通过传递给Buffer构造函数的原始主机分配安全地读取Kernel结果。
@@ -432,7 +468,11 @@ Buffer破坏和主机访问器的创建都是导致此同步的操作。
 	但对于大多数用户，尤其是新开发人员，建议使用作用域内的主机访问器。
 \end{remark}
 
-{\color{red} 常见 bug：在Buffer生存期内直接从主机分配中读取数据}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.10.png}
+	\caption{\textit{常见 bug：在Buffer生存期内直接从主机分配中读取数据 }}
+\end{figure}
 
 为了避免这些错误，我们建议在开始使用带有 SYCL 的 C++ 时使用主机访问器而不是Buffer范围。 
 主机访问器提供对主机Buffer的访问，一旦它们的构造函数完成运行，
@@ -440,12 +480,20 @@ Buffer破坏和主机访问器的创建都是导致此同步的操作。
 本书混合使用了两种风格（即主机访问器和传递给Buffer构造函数的主机分配）来熟悉这两种风格。 
 开始时使用主机访问器往往不太容易出错。 图 13-11 显示了如何使用主机访问器从Kernel读取输出，而无需先破坏Buffer。
 
-{\color{red} 建议：使用主机访问器读取Kernel结果}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.11.png}
+	\caption{\textit{建议：使用主机访问器读取Kernel结果 }}
+\end{figure}
 
 只要Buffer处于活动状态，例如在典型Buffer生命周期的两端，
 就可以使用主机访问器 - 用于初始化Buffer内容并从Kernel读取结果。 图 13-12 显示了此模式的示例。
 
-{\color{red} 建议：使用主机访问器进行Buffer初始化和结果读取}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.12.png}
+	\caption{\textit{建议：使用主机访问器进行Buffer初始化和结果读取 }}
+\end{figure}
 
 最后要提到的一个细节是，主机访问器有时会在应用程序中引起相反的错误，因为它们也有生命周期。 
 当Buffer的主机访问器处于活动状态时，运行时将不允许任何设备使用该Buffer！ 
@@ -455,7 +503,11 @@ Buffer破坏和主机访问器的创建都是导致此同步的操作。
 并且 SYCL 运行时正在等待某些Kernel运行，则这可能会导致应用程序挂起。 
 我们早期的主机访问器在运行使用Buffer的Kernel之前会被销毁。
 
-{\color{red} 由于不当使用 host\_accessor 而导致的死锁（错误 - 挂起！}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F13.13.png}
+	\caption{\textit{由于不当使用 host\_accessor 而导致的死锁（错误 - 挂起!) }}
+\end{figure}
 
 \begin{remark}
 	使用主机访问器时，请确保在不再需要Kernel或其他主机访问器解锁Buffer使用时销毁它们。

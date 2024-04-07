@@ -20,7 +20,11 @@
 本节介绍典型 GPU 的工作原理以及 GPU 与其他加速器类型的不同之处。
 
 \subsubsection{GPU 构建模块}
-{\color{red} 典型的 GPU 构建块 — 无法扩展！}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.1.png}
+	\caption{\textit{典型的 GPU 构建块 — 无法扩展！ }}
+\end{figure}
 
 图 15-1 显示了一个非常简化的 GPU，由三个高级构建块组成：
 
@@ -45,7 +49,11 @@ GPU 缓存可以是隐式的，在这种情况下，它们不需要程序员执�
 例如，典型的游戏帧或渲染工作负载涉及数千个顶点，每帧产生数百万个像素。 
 为了保持交互式帧速率，必须尽快处理这些大批量数据。
 
-{\color{red} GPU 处理器更简单，但数量更多}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.2.png}
+	\caption{\textit{GPU 处理器更简单，但数量更多 }}
+\end{figure}
 
 典型的 GPU 设计权衡是消除形成加速单线程性能的执行资源的处理器的功能，并利用这些节省来构建额外的处理器，
 如图 15-2 所示。 例如，GPU 处理器可能不包括其他类型处理器使用的复杂的乱序执行功能或分支预测逻辑。 
@@ -73,13 +81,21 @@ oneMKL 项目（oneAPI 的一部分）提出了一些接口，
 通过将矩阵乘法Kernel作为单个任务提交到队列中，可以在 GPU 上轻松执行。 
 该矩阵乘法Kernel的主体看起来与主机 CPU 上执行的函数完全相同，如图 15-3 所示。
 
-{\color{red} 单任务矩阵乘法看起来很像 CPU 主机代码}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.3.png}
+	\caption{\textit{单任务矩阵乘法看起来很像 CPU 主机代码 }}
+\end{figure}
 
 如果我们尝试在 CPU 上执行该Kernel，它的性能可能还不错，但不是很好，
 因为预计它不会利用 CPU 的任何并行功能，但对于小矩阵大小来说可能足够好。 
 然而，如图 15-4 所示，如果我们尝试在 GPU 上执行该Kernel，它的性能可能会很差，因为单个任务只会使用单个 GPU 处理器。
 
-{\color{red} GPU 上的单任务Kernel会使许多执行资源处于空闲状态}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.4.png}
+	\caption{\textit{GPU 上的单任务Kernel会使许多执行资源处于空闲状态 }}
+\end{figure}
 
 \paragraph{表达并行性}
 
@@ -88,14 +104,22 @@ oneMKL 项目（oneAPI 的一部分）提出了一些接口，
 对于矩阵乘法Kernel，我们可以选择提交代表两个最外层循环之一的一系列数据元素。 
 在图 15-5 中，我们选择并行处理结果矩阵的行。
 
-{\color{red} 某种平行矩阵乘法}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.5.png}
+	\caption{\textit{某种平行矩阵乘法 }}
+\end{figure}
 
 \begin{remark}[选择如何并行化]
 选择要并行化的维度是针对 GPU 和其他设备类型调整应用程序的一种非常重要的方法。
 本章的后续部分将介绍为什么在一个维度中并行化可能比在另一个维度中并行化效果更好的一些原因。
 \end{remark}
 
-{\color{red} 某种程度上并行的Kernel使更多的处理器资源保持忙碌}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.6.png}
+	\caption{\textit{某种程度上并行的Kernel使更多的处理器资源保持忙碌 }}
+\end{figure}
 
 尽管有点并行的Kernel与单任务Kernel非常相似，但它在 CPU 上运行得更好，在 GPU 上运行得更好。 
 如图 15-6 所示，parallel\_for 使代表结果矩阵行的Work-Items能够在多个处理器资源上并行处理，
@@ -106,7 +130,11 @@ oneMKL 项目（oneAPI 的一部分）提出了一些接口，
 
 \paragraph{表达更多的并行性}
 
-{\color{red} 更多并行矩阵乘法}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.7.png}
+	\caption{\textit{更多并行矩阵乘法 }}
+\end{figure}
 
 通过选择并行处理两个外部循环，我们可以进一步并行化矩阵乘法Kernel。 
 因为 parallel\_for 可以在最多三个维度上表达并行循环，所以这很简单，如图 15-7 所示。 
@@ -131,7 +159,11 @@ oneMKL 项目（oneAPI 的一部分）提出了一些接口，
 由于术语“线程”过载且容易被误解，即使在不同的 GPU 供应商之间也是如此，因此本章改用术语“指令流”。
 \end{remark}
 
-{\color{red} 四宽 SIMD 处理器：四个 ALU 共享获取/解码逻辑}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.8.png}
+	\caption{\textit{四宽 SIMD 处理器：四个 ALU 共享获取/解码逻辑 }}
+\end{figure}
 
 由单个指令同时处理的数据元素的数量有时被称为指令或执行指令的处理器的SIMD宽度。 
 在图 15-8 中，四个 ALU 共享相同的控制逻辑，因此可以将其描述为四宽 SIMD 处理器。
@@ -150,7 +182,11 @@ GPU 处理器与其他处理器类型之间的主要区别在于，GPU 处理器
 第 9 章的“Sub-Groups”部分探讨了数据元素分组对应用程序可见的情况。
 \end{remark}
 
-{\color{red} 在 SIMD 处理器上执行某种并行Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.9.png}
+	\caption{\textit{在 SIMD 处理器上执行某种并行Kernel }}
+\end{figure}
 
 在图 15-9 中，我们扩展了每个执行资源以支持四宽 SIMD，从而允许我们并行处理四倍数量的矩阵行。
 
@@ -169,7 +205,11 @@ GPU 处理器与其他处理器类型之间的主要区别在于，GPU 处理器
 当控制流在 SIMD 指令流中出现分歧时，通常会执行两个控制流路径，并屏蔽或预测某些通道。 
 这确保了正确的行为，但正确性是以性能为代价的，因为被屏蔽的通道不会执行有用的工作。
 
-{\color{red} 具有发散控制流的Kernel}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.10.png}
+	\caption{\textit{具有发散控制流的Kernel }}
+\end{figure}
 
 为了展示预测和屏蔽的工作原理，请考虑图 15-10 中的Kernel，
 它将每个具有“奇数”索引的数据元素乘以 2，并将每个具有“偶数”索引的数据元素递增 1。
@@ -178,7 +218,11 @@ GPU 处理器与其他处理器类型之间的主要区别在于，GPU 处理器
 在不同的 SIMD 指令流中执行接下来的四个数据元素，等等 在。 
 图 15-11 显示了可以屏蔽通道和预测执行以使用发散控制流正确执行该Kernel的方法之一。
 
-{\color{red} 发散Kernel的可能通道掩码}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.11.png}
+	\caption{\textit{发散Kernel的可能通道掩码 }}
+\end{figure}
 
 \paragraph{SIMD效率}
 
@@ -204,7 +248,11 @@ SIMD 效率衡量 SIMD 指令流与等效标量指令流相比的性能。
 针对 preferred\_work\_group\_size\_multiple 的设备特定Kernel查询可用于选择有效的 Work-Groups大小。 
 有关如何查询设备属性的详细信息，请参阅第 12 章。
 
-{\color{red} 低效的单项、有点平行的矩阵乘法}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.12.png}
+	\caption{\textit{低效的单项、有点平行的矩阵乘法 }}
+\end{figure}
 
 选择由单个Work-Items组成的Work-Groups大小可能会表现得很差，
 因为许多 GPU 将通过屏蔽除一个通道之外的所有 SIMD 通道来实现单Work-Items 的 Work-Groups。 
@@ -220,7 +268,11 @@ Work-Items ND 范围Kernel (nd\_range<1>{M, 1})。
 如果一个指令流正在执行长延迟操作，例如从内存读取，则处理器可以切换到准备运行的不同指令流，而不是等待操作完成。 
 有了足够的指令流，当处理器切换回原始指令流时，长延迟操作可能已经完成，而无需处理器等待。
 
-{\color{red} 切换指令流以隐藏延迟}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.13.png}
+	\caption{\textit{切换指令流以隐藏延迟 }}
+\end{figure}
 
 图 15-13 显示了处理器如何使用多个同时指令流来隐藏延迟并提高性能。 
 尽管第一个指令流在多个流中执行的时间稍长，但通过切换到其他指令流，
@@ -238,7 +290,11 @@ GPU 分析工具可以使用诸如占用率之类的术语来描述 GPU 处理�
 这使得 GPU 处理器更容易受到延迟问题的影响，但由于数据并行编程涉及处理大量数据，GPU 处理器通常有大量指令流要执行！
 
 \subsection{将Kernel卸载到 GPU}
-{\color{red} 将并行Kernel卸载到 GPU（简化）}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.14.png}
+	\caption{\textit{将并行Kernel卸载到 GPU（简化）}}
+\end{figure}
 
 本节介绍应用程序、SYCL 运行时库和 GPU 软件驱动程序如何协同工作以在 GPU 硬件上卸载Kernel。 
 图 15-14 中的图表显示了具有这些抽象层的典型软件堆栈。 
@@ -262,7 +318,11 @@ GPU 软件驱动程序通常是 API 的实现，例如 OpenCL、零级或 CUDA�
 例如，GPU驱动程序可以调用GPU编译器来将Kernel从中间表示及时编译为GPU ISA（指令集架构）。 
 这些软件模块以及它们之间的交互如图15-15所示。
 
-{\color{red} 典型的 GPU 软件驱动程序模块}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.15.png}
+	\caption{\textit{典型的 GPU 软件驱动程序模块}}
+\end{figure}
 
 \subsubsection{GPU硬件}
 当运行时库或 GPU 软件用户模式驱动程序被明确请求提交工作时，
@@ -296,7 +356,11 @@ GPU 软件驱动程序通常是 API 的实现，例如 OpenCL、零级或 CUDA�
 
 \paragraph{与设备内存之间的传输}
 
-{\color{red} 设备内存、远程内存和主机内存之间的典型差异}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.16.png}
+	\caption{\textit{设备内存、远程内存和主机内存之间的典型差异}}
+\end{figure}
 
 在具有专用内存的 GPU 上，请特别注意专用 GPU 内存与主机或其他设备上的内存之间的传输成本。 
 图 15-16 显示了系统中不同内存类型之间的典型内存带宽差异。
@@ -334,30 +398,44 @@ GPU 供应商通常会提供分析工具来帮助做出这一决定。
 如果Kernel对全局内存的操作效率低下，它几乎总是会表现得很差。 
 尽管 GPU 通常包含用于读取和写入内存中任意位置的专用硬件收集和分散单元，
 但对全局内存的访问性能通常由数据访问的局部性驱动。 
-如果Work-Groups中的一个Work-Items正在访问存储器中与Work-Groups中的另一Work-Items所访问的元素相邻的元素，则全局存储器访问性能可能良好。 
+如果Work-Groups中的一个Work-Items正在访问存储器中与Work-Groups中的另一Work-Items所访问的元素相邻的元素，
+则全局存储器访问性能可能良好。 
 如果Work-Groups中的Work-Items改为跨步或随机访问内存，则全局内存访问性能可能会更差。 
 一些 GPU 文档将附近内存访问的操作描述为合并内存访问。
 
 回想一下，对于图 15-5 中的稍微并行的矩阵乘法Kernel，我们可以选择是否并行处理结果矩阵的行或列，
 并且我们选择并行操作结果矩阵的行。 
 事实证明这是一个糟糕的选择：如果 id 等于 m 的一个Work-Items与 id 等于 m-1 或 m+1 的相邻Work-Items分组，
-则用于访问矩阵 B 的索引对于每个Work-Items都是相同的 Work-Items，但用于访问矩阵 A 的索引相差 K，这意味着访问是高度跨步的。 
+则用于访问矩阵 B 的索引对于每个Work-Items都是相同的 Work-Items，
+但用于访问矩阵 A 的索引相差 K，这意味着访问是高度跨步的。 
 矩阵 A 的访问模式如图 15-17 所示。
 
-{\color{red} 对矩阵A的访问非常缓慢且效率低下}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.17.png}
+	\caption{\textit{对矩阵A的访问非常缓慢且效率低下}}
+\end{figure}
 
 相反，如果我们选择并行处理结果矩阵的列，则访问模式具有更好的局部性。 
 图15-18中的Kernel在结构上与图15-5中的Kernel非常相似，
 唯一的区别是图15-18中的每个Work-Items对结果矩阵的列进行操作，而不是对结果矩阵的行进行操作 。
 
-{\color{red} 并行计算结果矩阵的列，而不是行}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.18.png}
+	\caption{\textit{并行计算结果矩阵的列，而不是行}}
+\end{figure}
 
 尽管这两个Kernel在结构上非常相似，但在许多 GPU 上，对数据列进行操作的Kernel将显着优于对数据行进行操作的Kernel，
 这纯粹是由于更高效的内存访问：如果一个Work-Items的 id 相等 to n 与 id 等于 n-1 或 n+1 的相邻Work-Items分组，
 用于访问矩阵 A 的索引现在对于每个Work-Items都是相同的，并且用于访问矩阵 B 的索引是连续的。 
 矩阵 B 的访问模式如图 15-19 所示。
 
-{\color{red} 对 matrixB 的访问是连续且高效的}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.19.png}
+	\caption{\textit{对 matrixB 的访问是连续且高效的}}
+\end{figure}
 
 对连续数据的访问通常非常有效。 一个好的经验法则是，一组Work-Items对全局内存的访问性能是所访问的 GPU 缓存行数量的函数。 
 如果所有访问都在单个高速缓存行内，则访问将以峰值性能执行。 
@@ -375,7 +453,8 @@ GPU 供应商通常会提供分析工具来帮助做出这一决定。
 正如我们所看到的，在某些情况下，我们可以设计算法来有效地访问内存，例如选择在一个维度而不是另一个维度进行并行化。 
 然而，这种技术并非在所有情况下都可行。 本节介绍如何使用Work-Groups本地内存来有效支持更多内存访问模式。
 
-回想一下第 9 章，Work-Groups中的Work-Items可以通过Work-Groups本地内存进行通信并使用Work-Groups障碍进行同步来合作解决问题。 
+回想一下第 9 章，Work-Groups中的Work-Items可以通过Work-Groups本地内存进行通信
+并使用Work-Groups障碍进行同步来合作解决问题。 
 该技术对于 GPU 特别有利，因为典型的 GPU 具有专门的硬件来实现屏障和Work-Groups本地内存。 
 不同的 GPU 供应商和不同的产品可能会以不同的方式实现Work-Groups本地内存，
 但与全局内存相比，Work-Groups本地内存通常有两个好处：本地内存可以支持比全局内存访问更高的带宽和更低的延迟，
@@ -393,7 +472,11 @@ GPU 供应商通常会提供分析工具来帮助做出这一决定。
 为了获得最大的本地内存性能，请最大限度地减少 bank 冲突的数量！
 \end{remark}
 
-{\color{red} 不同访问模式、全局和本地内存的可能性能}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/F15.20.png}
+	\caption{\textit{不同访问模式、全局和本地内存的可能性能}}
+\end{figure}
 
 全局内存和本地内存的访问模式和预期性能摘要如图 15-20 所示。 
 假设当 ptr 指向全局内存时，指针与 GPU 缓存行的大小对齐。 
