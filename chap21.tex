@@ -10,7 +10,7 @@
 \subsubsection{多个目标与单个设备目标}
 CUDA 和 SYCL 之间最大的设计差异之一是它们设计支持的设备范围。 
 CUDA 旨在支持来自单一设备供应商的 GPU 设备，因此大多数 CUDA 设备看起来相对相似。 
-例如，所有 CUDA 设备当前都包含纹理采样硬件，并且所有 CUDA 设备当前都支持相同的最大工作组大小。 
+例如，所有 CUDA 设备当前都包含纹理采样硬件，并且所有 CUDA 设备当前都支持相同的最大Work-Groups大小。 
 这降低了复杂性，但也减少了 CUDA 应用程序可以运行的位置。
 
 相比之下，SYCL 旨在支持多种异构加速器，包括来自不同设备供应商的不同设备。 
@@ -46,7 +46,7 @@ CUDA 做出了不同的决定。 相反，CUDA 通过添加新关键字和特殊
 要在实践中看到这种设计差异，请注意图 21-1 中的 SYCL 示例如何使用标准 C++ lambda 表达式来表示Kernel代码，
 并使用标准 C++ 函数调用来提交Kernel执行。 
 图 21-2 中的 CUDA 示例使用特殊的 \_\_global\_\_ 关键字来标识Kernel代码，
-并使用特殊的 <<< >>> 语法来提交Kernel执行。
+并使用特殊的 < < < > > > 语法来提交Kernel执行。
 
 \subsection{CUDA 和 SYCL 之间的术语差异}
 现在我们了解了 SYCL 和 CUDA 之间的一些关键设计差异，我们几乎准备好开始检查具体的相似点和差异。 
@@ -104,16 +104,16 @@ SYCL 将其约定与标准 C++ 中的多维数组对齐，因此最后一个维�
 
 {\color{red} 最后一个维度是 SYCL 中的连续维度}
 
-等效的 SYCL 示例如图 21-5 所示。 请注意，在 SYCL 示例中，ND 范围是 {2, 16}，
+等效的 SYCL 示例如图 21-5 所示。 请注意，在 SYCL 示例中，ND 范围是 \{2, 16\}，
 而不是 CUDA 示例中的 (16, 2)，因此并行索引空间似乎已转置。 
-SYCL 示例还将 ND 范围描述为 {2, 16} 全局范围，分为大小为 {2, 16} 的工作组，
-而 CUDA 示例描述了一个块的网格，每个块有 (16, 2) 个 CUDA 线程。 堵塞。
+SYCL 示例还将 ND 范围描述为 \{2, 16\} 全局范围，分为大小为 \{2, 16\} 的Work-Groups，
+而 CUDA 示例描述了一个块的网格，每个块有 (16, 2) 个 CUDA 线程。
 
-此外，请注意，每个 SYCL 工作项都会与其邻居交换其 item.get\_local\_id(1)
+此外，请注意，每个 SYCL Work-Items都会与其邻居交换其 item.get\_local\_id(1)
 （不是 item.get\_local\_id(0)！）的值，因为最后一个维度是 SYCL 中移动最快的组件。 
-在此 SYCL 示例中，我们也不期望 SYCL 工作项的值与其相邻工作项的值相匹配。
+在此 SYCL 示例中，我们也不期望 SYCL Work-Items的值与其相邻Work-Items的值相匹配。
 
-\paragraph{子组尺寸（变形尺寸）}
+\paragraph{Sub-Groups尺寸（变形尺寸）}
 
 如果仔细查看这些示例，我们还可以发现更多差异，特别是与用于与邻居交换数据的函数相关的差异。
 
@@ -122,9 +122,9 @@ CUDA 示例使用函数 \_\_shfl\_xor\_sync(0xFFFFFFFF,fastest,1) 与邻居交�
 对于 CUDA 设备，32 位掩码就足够了，因为当前所有 CUDA 设备的扭曲大小均为 32。
 
 SYCL 示例使用函数 permute\_group\_by\_xor(sg,fastest,1) 与其邻居交换数据。 
-对于此函数，第一个参数描述参与调用的工作项集。 在这种情况下，sg 代表整个子组。 
-由于工作项集是由组对象而不是位域掩码指定的，因此它可以表示任意大小的集。 
-这种灵活性是可取的，因为对于某些 SYCL 设备，子组大小可能小于或大于 32。
+对于此函数，第一个参数描述参与调用的Work-Items集。 在这种情况下，sg 代表整个Sub-Groups。 
+由于Work-Items集是由组对象而不是位域掩码指定的，因此它可以表示任意大小的集。 
+这种灵活性是可取的，因为对于某些 SYCL 设备，Sub-Groups大小可能小于或大于 32。
 
 {\color{red} 与CUDA合作小组交换数据}
 
@@ -141,7 +141,7 @@ SYCL 示例使用函数 permute\_group\_by\_xor(sg,fastest,1) 与其邻居交换
 为什么在调用该函数之前 CUDA 线程可能首先不同步？
 
 在第 15 章和第 16 章中，我们为在 CPU 或 GPU 上执行的数据并行Kernel开发了一个心智模型，
-其中使用 SIMD 指令同步处理一组工作项。 
+其中使用 SIMD 指令同步处理一组Work-Items。 
 虽然这对于许多供应商的 CPU 和 GPU 来说是一个有用的心智模型，
 但它并不是使用 SYCL 或 CUDA 执行数据并行Kernel的唯一方法，
 并且这种心智模型崩溃的情况之一是对于支持的较新 CUDA 设备 称为独立线程调度的功能。
@@ -158,10 +158,10 @@ CUDA 中添加了 \_\_shfl\_xor\_sync 函数上的 \_sync 后缀，
 
 \paragraph{Barrier}
 
-我们应该注意的最后一个微妙的执行模型差异涉及 CUDA \_\_syncthreads 函数
+我们应该注意的最后一个微妙的执行模型差异涉及 CUDA 的 \_\_syncthreads 函数
 与 SYCL group\_barrier 等效函数的比较。 
-CUDA \_\_syncthreads 函数同步线程块中的所有未退出的 CUDA 线程，
-而 SYCL group\_barrier 函数同步工作组中的所有工作项。 
+CUDA 的 \_\_syncthreads 函数同步线程块中的所有未退出的 CUDA 线程，
+而 SYCL group\_barrier 函数同步Work-Groups中的所有Work-Items。 
 这意味着，如果某些 CUDA 线程在调用 \_\_syncthreads 之前提前退出，
 则 CUDA Kernel将正确运行，但不能保证如图 21-7 所示的 SYCL Kernel将正确运行。
 
@@ -169,7 +169,7 @@ CUDA \_\_syncthreads 函数同步线程块中的所有未退出的 CUDA 线程�
 
 在这种情况下，解决方法很简单：可以将范围检查移到 group\_barrier 之后，
 或者在这种特定情况下，可以完全删除 group\_barrier。 
-但情况并非总是如此，其他Kernel可能需要重组以确保所有工作项始终到达或始终跳过 group\_barrier。
+但情况并非总是如此，其他Kernel可能需要重组以确保所有Work-Items始终到达或始终跳过 group\_barrier。
 
 \subsubsection{内存模型}
 从根本上来说，CUDA 和 SYCL 都使用类似的弱有序内存模型。 
@@ -177,9 +177,9 @@ CUDA \_\_syncthreads 函数同步线程块中的所有未退出的 CUDA 线程�
 
 \paragraph{Barrier}
 
-默认情况下，假设传递给 SYCL group\_barrier 的组是工作组，
+默认情况下，假设传递给 SYCL group\_barrier 的组是Work-Groups，
 则 CUDA \_\_syncthreads Barrier函数和 SYCL group\_barrier Barrier函数对内存模型具有相同的效果。 
-同样，假设传递给 SYCL group\_barrier 的组是子组，
+同样，假设传递给 SYCL group\_barrier 的组是Sub-Groups，
 则 CUDA \_\_syncwarp Barrier函数与 SYCL group\_barrier Barrier函数具有相同的效果。
 
 SYCL group\_barrier 接受一个可选参数来指定Barrier的 fence\_scope，但在大多数情况下，可以省略。 
@@ -235,8 +235,8 @@ cuda::atomic\_ref 类看起来更像 SYCLatomic\_ref 类，但也有一些重要
 
 CUDA 和 SYCL 之间较大的风格差异之一是Kernel实例识别其在 N 维并行索引空间中的位置的方式。 
 回想一下第 4 章，每个 SYCL Kernel都必须采用一个项、一个 nd\_item、一个 id，
-或者在某些情况下采用一个整数参数来标识并行索引空间中的工作项。 
-item 和 nd\_item 类还可用于查询有关并行索引空间本身的信息，例如全局范围、局部范围以及工作项所属的不同组。
+或者在某些情况下采用一个整数参数来标识并行索引空间中的Work-Items。 
+item 和 nd\_item 类还可用于查询有关并行索引空间本身的信息，例如全局范围、局部范围以及Work-Items所属的不同组。
 
 CUDA Kernel不包含任何参数来标识并行索引空间中的 CUDA 线程。 
 相反，CUDA 线程使用内置变量（例如 blockIdx 和 threadIdx）来标识并行索引空间中的位置，
@@ -245,7 +245,7 @@ CUDA Kernel不包含任何参数来标识并行索引空间中的 CUDA 线程。
 
 这通常只是一个语法差异，不会在功能上影响我们可以编写的代码，
 尽管这确实意味着 SYCL Kernel在更多情况下可能会将一个项目或一个 nd\_item 传递给被调用函数，
-例如被调用函数是否需要知道工作- 项目索引。
+例如被调用函数是否需要知道 work-item 索引。
 
 \paragraph{上下文}
 
@@ -291,7 +291,7 @@ SYCL 是一个开放标准，许多 SYCL 实现都是开源的，因此可以轻
 
 \subsubsection{全局变量}
 尽管程序员很早就被告知永远不要使用全局变量，但有时全局变量是完成这项工作的正确工具。 
-我们可能选择使用全局变量来存储有用的常量、查找表或我们希望执行数据并行Kernel的所有工作项都可以访问的其他值。
+我们可能选择使用全局变量来存储有用的常量、查找表或我们希望执行数据并行Kernel的所有Work-Items都可以访问的其他值。
 
 CUDA 支持不同地址空间中的全局变量，因此具有不同的生命周期。 
 例如，CUDA 程序可以在全局内存空间中声明一个对于每个设备都是唯一的 \_\_device\_\_ 全局变量。 
@@ -302,16 +302,16 @@ CUDA 程序还可以在 CUDA 共享内存空间中声明一个 \_\_shared\_\_ �
 
 SYCL 尚不支持设备代码中的全局变量，尽管正在开发提供类似功能的扩展。
 
-\subsubsection{合作团体}
+\subsubsection{协作组}
 如本章前面所述，CUDA 的最新版本支持协作组，这为Barrier和洗牌函数等集体操作提供了替代语法。 
 SYCL 组对象和 SYCL 组算法库与 CUDA 协作组有许多相似之处，但仍然存在一些关键差异。
 
-最大的区别在于，SYCL 组功能目前仅适用于预定义的 SYCL 工作组和子组类，而 CUDA 协作组则更加灵活。 
+最大的区别在于，SYCL 组功能目前仅适用于预定义的 SYCL Work-Groups和Sub-Groups类，而 CUDA 协作组则更加灵活。 
 例如，CUDA 程序可以创建固定大小的tiled\_partition 组，
 将现有组划分为一组更小的组，或者CUDA 程序可以将CUDA warp 中当前活动的CUDA 线程组表示为coalesced\_group。
 
-CUDA 程序还可以创建比工作组更大的合作组。 
-例如，CUDA 程序可以创建表示网格中所有 CUDA 线程（相当于全局范围内的所有工作项）的 grid\_group，
+CUDA 程序还可以创建比Work-Groups更大的协作组。 
+例如，CUDA 程序可以创建表示网格中所有 CUDA 线程（相当于全局范围内的所有Work-Items）的 grid\_group，
 或者表示线程块集群中所有 CUDA 线程的 cluster\_group。 
 为了有效地使用这些更新和更大的组，必须使用特殊的主机 API 函数启动 CUDA Kernel，
 以确保网格中的所有 CUDA 线程可以协作，或者指定线程块簇尺寸。
@@ -326,7 +326,7 @@ SYCL 2020 中引入的组对象和组算法使 SYCL 能够很好地支持此功�
 如果我们想要定制这些工作负载，那么必须能够访问数据并行Kernel中的矩阵乘法硬件以实现峰值性能，这一点非常重要。
 
 CUDA 通过扭曲矩阵乘法和累加 (WMMA) 函数提供对矩阵乘法硬件的访问。 
-这些函数有效地允许扭曲中的 CUDA 线程（相当于子组中的工作项）协作以在较小的矩阵图块上执行矩阵乘法和累加操作。 
+这些函数有效地允许扭曲中的 CUDA 线程（相当于Sub-Groups中的Work-Items）协作以在较小的矩阵图块上执行矩阵乘法和累加操作。 
 对于某些设备和算法，这些矩阵图块的元素可以是 32 位浮点型或 64 位双精度型，
 但更常见的是使用较低精度的类型，例如 8 位字符、16 位半数或专用 AI 类型，例如 bfloat16s ( bf16）。
 
